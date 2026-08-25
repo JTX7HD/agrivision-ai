@@ -1,6 +1,6 @@
 import React from 'react';
 import type { PipelineStageStatus, Crop } from '../../models/types';
-import { Cpu, CheckCircle2, Loader2, Layers, Eye, ShieldCheck } from 'lucide-react';
+import { Cpu, CheckCircle2, Loader2, ShieldCheck, Search } from 'lucide-react';
 
 interface PipelineVisualizerProps {
   crop: Crop;
@@ -15,12 +15,10 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
 }) => {
   const getStageIcon = (stageId: string) => {
     switch (stageId) {
-      case 'sam':
-        return Layers;
+      case 'quality':
+        return Search;
       case 'onnx':
         return Cpu;
-      case 'lime':
-        return Eye;
       default:
         return Cpu;
     }
@@ -33,13 +31,13 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
           <Cpu className="w-4 h-4 text-emerald-400 animate-pulse" />
-          <span>SAM + MobileNetV3 ONNX + LIME Explainable AI Pipeline</span>
+          <span>MobileNetV3 ONNX Edge Inference Engine</span>
         </div>
         <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-          Analyzing {crop.name} Leaf...
+          Evaluating {crop.name} Leaf...
         </h2>
         <p className="text-sm text-slate-400 max-w-lg mx-auto">
-          Executing pipeline: Leaf Segmentation (SAM) $\rightarrow$ ONNX Classification (MobileNetV3) $\rightarrow$ LIME Visual Explanation.
+          Running Image Quality Inspection $\rightarrow$ Client-Side WASM ONNX Model Inference.
         </p>
       </div>
 
@@ -50,7 +48,7 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
         <div className="md:col-span-5 relative rounded-3xl overflow-hidden bg-slate-950 border-2 border-emerald-500/40 shadow-2xl aspect-square flex items-center justify-center">
           <img
             src={imageUrl}
-            alt="Leaf under AI analysis"
+            alt="Leaf under AI model analysis"
             className="w-full h-full object-cover opacity-85"
           />
 
@@ -59,7 +57,7 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
 
           <div className="absolute bottom-3 inset-x-3 bg-slate-950/85 backdrop-blur-md px-3 py-2 rounded-xl text-[11px] text-emerald-300 flex items-center justify-between border border-emerald-900/60">
             <span>Crop: {crop.name}</span>
-            <span className="font-semibold text-white">MobileNetV3 224x224 Tensor</span>
+            <span className="font-semibold text-white">224x224 RGB Float32</span>
           </div>
         </div>
 
@@ -69,6 +67,7 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
             const Icon = getStageIcon(stage.id);
             const isCompleted = stage.status === 'completed';
             const isRunning = stage.status === 'running';
+            const isFailed = stage.status === 'failed';
 
             return (
               <div
@@ -78,6 +77,8 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
                     ? 'bg-slate-900 border-emerald-500 shadow-lg shadow-emerald-950/50 ring-2 ring-emerald-500/20'
                     : isCompleted
                     ? 'bg-slate-900/80 border-emerald-800/40 opacity-90'
+                    : isFailed
+                    ? 'bg-red-950/40 border-red-800/60'
                     : 'bg-slate-950/50 border-slate-800 opacity-40'
                 }`}
               >
@@ -88,6 +89,8 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
                         ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30'
                         : isCompleted
                         ? 'bg-emerald-900/60 text-emerald-400 border border-emerald-700/50'
+                        : isFailed
+                        ? 'bg-red-900/60 text-red-300 border border-red-700/50'
                         : 'bg-slate-800 text-slate-500'
                     }`}
                   >
@@ -119,6 +122,12 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
                         ✓ {stage.outputSummary}
                       </div>
                     )}
+
+                    {isFailed && stage.outputSummary && (
+                      <div className="mt-2 text-[11px] font-mono text-red-300 bg-red-950/60 p-2 rounded-lg border border-red-800/40">
+                        ✕ {stage.outputSummary}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -130,7 +139,7 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
 
       <div className="text-center text-xs text-slate-500 flex items-center justify-center gap-2">
         <ShieldCheck className="w-4 h-4 text-emerald-500" />
-        <span>Client-Side MobileNetV3 ONNX + Real SAM & LIME Explainability Engine</span>
+        <span>Processing image strictly locally via client-side ONNX Runtime WASM</span>
       </div>
 
     </div>

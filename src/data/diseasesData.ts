@@ -1,29 +1,26 @@
-import type { DiseaseInfo, CropId } from '../models/types';
+import type { DiseaseKnowledge, CropId } from '../models/types';
 
-export const DISEASES_DATABASE: Record<string, DiseaseInfo> = {
+export const DISEASES_KNOWLEDGE_BASE: Record<string, DiseaseKnowledge> = {
   'tomato-bacterial-spot': {
     id: 'tomato-bacterial-spot',
     cropId: 'tomato',
     name: 'Tomato Bacterial Spot',
     scientificName: 'Xanthomonas perforans',
-    severity: 'Severe',
-    confidence: 95.0,
-    description: 'Bacterial infection causing small, dark, water-soaked spots on foliage that become dark brown and greasy with yellow halos.',
-    symptoms: [
-      'Small (1-3 mm) water-soaked dark spots on leaves',
-      'Lesions turn dark brown to black with yellow halos',
-      'Leaf drop in severe infestations exposing fruit to sunscald'
+    description: 'A bacterial infection affecting foliage, stems, and fruit under warm, wet weather conditions.',
+    commonSymptoms: [
+      'Small (1–3 mm) dark, water-soaked spots on leaf blades',
+      'Lesions turning dark brown to black with faint yellow chlorotic halos',
+      'Premature defoliation in severe, unmanaged field conditions'
     ],
-    immediateAction: [
-      'Remove and destroy infected plant debris immediately',
-      'Avoid working in wet fields or overhead irrigation'
+    generalManagement: [
+      'Remove and safely destroy heavily infected crop debris',
+      'Apply protective copper-based bactericides early in the cropping season',
+      'Avoid working in wet fields or using overhead sprinkler irrigation'
     ],
-    prevention: [
-      'Use certified pathogen-free seeds and disease-resistant cultivars',
-      'Apply protective copper bactericides early in the season'
-    ],
-    biologicalControl: ['Bacillus subtilis foliar sprays'],
-    chemicalControl: ['Copper hydroxide combined with Mancozeb']
+    preventativeMeasures: [
+      'Use certified pathogen-free seeds and transplants',
+      'Practice 2 to 3 year crop rotation with non-solanaceous crops'
+    ]
   },
 
   'tomato-early-blight': {
@@ -31,35 +28,21 @@ export const DISEASES_DATABASE: Record<string, DiseaseInfo> = {
     cropId: 'tomato',
     name: 'Tomato Early Blight',
     scientificName: 'Alternaria solani',
-    severity: 'Moderate',
-    confidence: 94.2,
-    description: 'A common fungal disease causing dark brown concentric spots ("bullseye" target pattern) on older lower leaves, eventually causing defoliation.',
-    symptoms: [
-      'Concentric dark brown to black leaf spots with yellow halos',
-      'Lower/older leaves affected first',
-      'Leaves turn yellow, dry up, and drop prematurely',
-      'Target-like ring pattern visible inside lesions'
+    description: 'A common fungal pathogen characterized by concentric target-pattern spots on older foliage.',
+    commonSymptoms: [
+      'Concentric dark brown leaf spots with distinct target-like ring patterns',
+      'Symptoms appearing first on lower, older leaves near soil level',
+      'Chlorotic yellowing around leaf lesions leading to leaf drop'
     ],
-    immediateAction: [
-      'Prune and isolate severely infected lower leaves immediately',
-      'Avoid overhead irrigation to keep foliage dry',
-      'Sterilize pruning tools with 70% alcohol between cuts'
+    generalManagement: [
+      'Prune and discard infected lower foliage to reduce spore load',
+      'Apply organic or copper-based protective fungicides at first sign of spots',
+      'Maintain wide plant spacing (60 cm) to promote air circulation'
     ],
-    prevention: [
-      'Practice 3-year crop rotation with non-solanaceous crops',
-      'Apply organic mulch (straw or wood chips) to prevent splash dispersal from soil',
-      'Maintain wide plant spacing (60 cm) for air circulation',
-      'Plant disease-resistant hybrid varieties'
-    ],
-    biologicalControl: [
-      'Spray Trichoderma viride or Bacillus subtilis bio-fungicides every 7-10 days.',
-      'Neem oil spray (0.5% concentration) to inhibit spore germination.'
-    ],
-    chemicalControl: [
-      'Copper oxychloride 50% WP @ 2.5g/L water',
-      'Mancozeb 75% WP @ 2g/L water as protective spray'
-    ],
-    researchPaperReference: '2025 IEEE Access Tomato Disease Benchmark Dataset #TB-2025-04'
+    preventativeMeasures: [
+      'Mulch soil with straw or plastic to prevent soil splash onto leaves',
+      'Rotate crops with non-solanaceous families'
+    ]
   },
 
   'tomato-late-blight': {
@@ -67,34 +50,21 @@ export const DISEASES_DATABASE: Record<string, DiseaseInfo> = {
     cropId: 'tomato',
     name: 'Tomato Late Blight',
     scientificName: 'Phytophthora infestans',
-    severity: 'Severe',
-    confidence: 96.8,
-    description: 'A devastating water mold pathogen spreading rapidly in cool, wet conditions, producing water-soaked dark gray spots with white downy mold underneath.',
-    symptoms: [
-      'Irregular water-soaked dark gray to purplish-black lesions',
-      'White downy fungal growth under wet leaf surfaces',
-      'Rapid stem wilting and leaf collapse within 3-5 days',
-      'Foul odor in heavily infected field patches'
+    description: 'A destructive oomycete pathogen capable of spreading rapidly during cool, humid, wet weather.',
+    commonSymptoms: [
+      'Irregular water-soaked dark gray to purplish-black necrotic lesions',
+      'White downy fungal growth visible on undersides of foliage during wet conditions',
+      'Rapid leaf collapse and stem wilting under high moisture'
     ],
-    immediateAction: [
-      'Remove and destroy entire heavily infected plants immediately (do not compost)',
-      'Stop overhead watering; switch to drip irrigation',
-      'Apply protective copper fungicide to surrounding healthy plants'
+    generalManagement: [
+      'Uproot and destroy heavily infected plants immediately away from fields',
+      'Switch from overhead sprinkler to base drip irrigation',
+      'Apply systemic or protective copper fungicides immediately to surrounding plants'
     ],
-    prevention: [
-      'Use certified pathogen-free seeds and transplants',
-      'Destroy volunteer tomato and potato plants nearby',
-      'Ensure maximum solar exposure and field drainage'
-    ],
-    biologicalControl: [
-      'Pseudomonas fluorescens leaf sprays (20g/L)',
-      'Garlic extract sprays for localized protective coating'
-    ],
-    chemicalControl: [
-      'Metalaxyl + Mancozeb @ 2g/L water',
-      'Cymoxanil + Mancozeb systemically applied'
-    ],
-    researchPaperReference: '2025 IEEE Access Tomato Disease Benchmark Dataset #TB-2025-09'
+    preventativeMeasures: [
+      'Plant certified disease-resistant varieties',
+      'Ensure good soil drainage and solar canopy exposure'
+    ]
   },
 
   'tomato-leaf-mold': {
@@ -102,24 +72,20 @@ export const DISEASES_DATABASE: Record<string, DiseaseInfo> = {
     cropId: 'tomato',
     name: 'Tomato Leaf Mold',
     scientificName: 'Passalora fulva',
-    severity: 'Moderate',
-    confidence: 92.5,
-    description: 'Fungal disease thriving in high humidity, producing pale green or yellow spots on upper leaf surfaces and velvety olive-green downy mold underneath.',
-    symptoms: [
-      'Pale green to pale yellow spots on upper leaf surface',
-      'Olive-green to dark brown velvety mold growth on leaf undersides',
-      'Affected leaves wither and drop off prematurely'
+    description: 'A fungal disease thriving in high relative humidity environments, particularly in greenhouses.',
+    commonSymptoms: [
+      'Pale green to pale yellow chlorotic spots on upper leaf surfaces',
+      'Olive-green to dark velvety downy mold underneath affected leaves',
+      'Withering and premature dropping of infected foliage'
     ],
-    immediateAction: [
-      'Increase greenhouse/field ventilation to reduce relative humidity below 85%',
-      'Prune dense foliage to enhance internal airflow'
+    generalManagement: [
+      'Increase greenhouse or field ventilation to keep relative humidity below 85%',
+      'Prune dense canopy leaves to enhance light and internal airflow'
     ],
-    prevention: [
-      'Plant leaf mold resistant cultivars (Fulvia resistant lines)',
-      'Avoid night watering and foliage wetness'
-    ],
-    biologicalControl: ['Trichoderma harzianum foliar treatment'],
-    chemicalControl: ['Copper-based fungicides or Chlorothalonil']
+    preventativeMeasures: [
+      'Use resistant tomato cultivars (e.g. Fulvia-resistant lines)',
+      'Avoid late evening irrigation'
+    ]
   },
 
   'tomato-septoria-leaf-spot': {
@@ -127,24 +93,20 @@ export const DISEASES_DATABASE: Record<string, DiseaseInfo> = {
     cropId: 'tomato',
     name: 'Tomato Septoria Leaf Spot',
     scientificName: 'Septoria lycopersici',
-    severity: 'Moderate',
-    confidence: 93.8,
-    description: 'Fungal leaf spot producing numerous small circular lesions with dark brown borders and light gray/tan centers containing tiny black fruiting bodies (pycnidia).',
-    symptoms: [
-      'Small circular spots (1.5-3 mm) with gray centers and dark brown margins',
-      'Tiny black specks inside center of leaf spots',
-      'Defoliation starting from oldest lower leaves moving upward'
+    description: 'A fungal leaf disease causing small, circular spots with dark margins and light gray centers.',
+    commonSymptoms: [
+      'Small circular leaf spots (1.5–3 mm) with tan centers and dark borders',
+      'Tiny black specks (pycnidia) visible inside the center of mature spots',
+      'Progressive defoliation moving from lower leaves upwards'
     ],
-    immediateAction: [
-      'Remove infected lower foliage immediately',
-      'Mulch soil to inhibit spore splashing'
+    generalManagement: [
+      'Strip affected lower leaves early in infection cycle',
+      'Apply protective Mancozeb or copper hydroxide foliar sprays'
     ],
-    prevention: [
+    preventativeMeasures: [
       'Practice 3-year crop rotation',
-      'Maintain wide spacing and weed control around foliage'
-    ],
-    biologicalControl: ['Bacillus subtilis bio-fungicide'],
-    chemicalControl: ['Mancozeb or Copper hydroxide sprays']
+      'Keep field area clear of nightshade weeds'
+    ]
   },
 
   'tomato-spider-mites': {
@@ -152,24 +114,20 @@ export const DISEASES_DATABASE: Record<string, DiseaseInfo> = {
     cropId: 'tomato',
     name: 'Two-Spotted Spider Mite Damage',
     scientificName: 'Tetranychus urticae',
-    severity: 'Moderate',
-    confidence: 91.7,
-    description: 'Pest infestation caused by microscopic spider mites feeding on leaf sap, creating yellow stippling/speckling and fine silk webbing underneath leaves.',
-    symptoms: [
-      'Fine white to yellow stippling dots on upper leaf surfaces',
-      'Silky webbing visible on leaf undersides and shoot tips',
-      'Leaves turn bronze, dry up, and curl completely'
+    description: 'Microscopic arachnid pests feeding on plant sap on the undersides of leaves.',
+    commonSymptoms: [
+      'Fine white to yellow stippling or speckling on upper leaf surfaces',
+      'Fine silky webbing visible on undersides of leaves and leaf axils',
+      'Foliage turning bronzed, dry, and brittle under heavy feeding'
     ],
-    immediateAction: [
-      'Spray leaf undersides with strong water jets to dislodge mite webbing',
-      'Isolate infested plants'
+    generalManagement: [
+      'Spray leaf undersides with strong water streams to dislodge webbing',
+      'Apply insecticidal soap or 1% Neem oil foliar spray'
     ],
-    prevention: [
-      'Maintain adequate humidity; avoid dry dusty field conditions',
+    preventativeMeasures: [
+      'Maintain adequate moisture; avoid dry, dusty field conditions',
       'Release predatory mites (Phytoseiulus persimilis)'
-    ],
-    biologicalControl: ['Insecticidal soap or 1% Neem oil foliar spray'],
-    chemicalControl: ['Abamectin or Spiromesifen miticide']
+    ]
   },
 
   'tomato-target-spot': {
@@ -177,24 +135,20 @@ export const DISEASES_DATABASE: Record<string, DiseaseInfo> = {
     cropId: 'tomato',
     name: 'Tomato Target Spot',
     scientificName: 'Corynespora cassiicola',
-    severity: 'Moderate',
-    confidence: 92.1,
-    description: 'Fungal pathogen causing brown spots on leaves with faint concentric rings, leading to premature leaf blighting under warm humid conditions.',
-    symptoms: [
-      'Pinpoint brown spots enlarging into circular target-patterned lesions',
-      'Yellow chlorotic halos surrounding brown necrotic spots',
-      'Blighting and collapse of foliage in warm moist canopy'
+    description: 'A fungal pathogen causing brown leaf spots with subtle concentric rings under warm, humid conditions.',
+    commonSymptoms: [
+      'Pinpoint brown spots expanding into circular target-patterned lesions',
+      'Yellow chlorotic halos surrounding necrotic spots',
+      'Premature blighting of foliage in dense plant canopies'
     ],
-    immediateAction: [
-      'Prune symptomatic foliage and increase sunlight exposure',
-      'Switch from overhead sprinklers to drip irrigation'
+    generalManagement: [
+      'Prune lower dense foliage to lower canopy humidity',
+      'Apply Azoxystrobin or Chlorothalonil protective spray'
     ],
-    prevention: [
-      'Clean plant residue after harvest',
-      'Rotate crops with non-host species'
-    ],
-    biologicalControl: ['Bacillus amyloliquefaciens sprays'],
-    chemicalControl: ['Azoxystrobin or Chlorothalonil protective spray']
+    preventativeMeasures: [
+      'Clean crop residues post-harvest',
+      'Rotate with non-host crop families'
+    ]
   },
 
   'tomato-yellow-leaf-curl-virus': {
@@ -202,24 +156,20 @@ export const DISEASES_DATABASE: Record<string, DiseaseInfo> = {
     cropId: 'tomato',
     name: 'Tomato Yellow Leaf Curl Virus (TYLCV)',
     scientificName: 'Begomovirus (TYLCV)',
-    severity: 'Severe',
-    confidence: 97.4,
-    description: 'Devastating viral disease transmitted by silverleaf whiteflies (Bemisia tabaci), causing upward leaf cupping, severe yellowing, and bushy stunted growth.',
-    symptoms: [
-      'Upward curling and cupping of leaf margins with severe yellowing',
-      'Marked reduction in leaf size and leaf puckering',
-      'Severe plant stunting and failure of flower/fruit set'
+    description: 'A viral disease transmitted by silverleaf whiteflies (Bemisia tabaci).',
+    commonSymptoms: [
+      'Upward curling and cupping of leaf margins with prominent yellowing',
+      'Marked reduction in leaf blade size and leaf puckering',
+      'Stunted overall plant growth and blossom drop'
     ],
-    immediateAction: [
-      'Promptly uproot and destroy infected viral plants',
-      'Deploy yellow sticky traps (15 per acre) to monitor whitefly vector population'
+    generalManagement: [
+      'Promptly uproot and destroy viral-infected plants',
+      'Deploy yellow sticky traps to monitor whitefly vector populations'
     ],
-    prevention: [
-      'Use TYLCV-resistant tomato hybrids (e.g., Ty-1/Ty-3 resistance genes)',
-      'Install 50-mesh insect-proof netting over nursery beds'
-    ],
-    biologicalControl: ['Neem oil (10,000 ppm) or Beauveria bassiana vector sprays'],
-    chemicalControl: ['Imidacloprid or Thiamethoxam systemic insecticide against whiteflies']
+    preventativeMeasures: [
+      'Plant TYLCV-resistant hybrid varieties',
+      'Use 50-mesh insect-proof netting over nursery beds'
+    ]
   },
 
   'tomato-mosaic-virus': {
@@ -227,258 +177,48 @@ export const DISEASES_DATABASE: Record<string, DiseaseInfo> = {
     cropId: 'tomato',
     name: 'Tomato Mosaic Virus (ToMV)',
     scientificName: 'Tobamovirus (ToMV)',
-    severity: 'Severe',
-    confidence: 96.0,
-    description: 'Highly contagious mechanical virus causing mottled light and dark green mosaic patterns, distorted fern-like leaves, and plant stunting.',
-    symptoms: [
+    description: 'A mechanically transmitted virus causing mosaic discoloration and foliage distortion.',
+    commonSymptoms: [
       'Alternating light green and dark green mosaic patches on leaves',
-      'Distorted, narrow, stringy or "shoestring" foliage',
-      'Internal browning of fruit walls and stunted growth'
+      'Distorted, narrow, stringy or "shoestring" leaf growth',
+      'Internal fruit browning and general plant stunting'
     ],
-    immediateAction: [
-      'Remove and burn infected plants immediately; do not compost',
-      'Wash hands thoroughly with soap/trisodium phosphate before handling healthy plants'
+    generalManagement: [
+      'Rogue out and destroy symptomatic viral plants',
+      'Wash hands thoroughly with soap before handling healthy foliage'
     ],
-    prevention: [
-      'Use certified virus-free seeds (heat-treated or trisodium phosphate disinfected)',
-      'Prohibit tobacco product use near crop fields'
-    ],
-    biologicalControl: ['Cross-protection with mild viral strains where permitted'],
-    chemicalControl: ['No chemical cure exists for viruses; focus on strict sanitation and rogueing']
+    preventativeMeasures: [
+      'Use certified virus-free seeds',
+      'Avoid tobacco product use near crop plants'
+    ]
   },
 
   'tomato-healthy': {
     id: 'tomato-healthy',
     cropId: 'tomato',
     name: 'Healthy Tomato Leaf',
-    scientificName: 'Solanum lycopersicum (Vigorous)',
-    severity: 'Healthy',
-    confidence: 98.5,
-    description: 'No pathogenic lesions, chlorosis, or necrotic spots detected. The leaf exhibits vibrant green color and uniform cellular integrity.',
-    symptoms: [
+    scientificName: 'Solanum lycopersicum',
+    description: 'No pathogenic lesions, chlorosis, or necrotic spots detected.',
+    commonSymptoms: [
       'Uniform deep green leaf blade coloration',
-      'Smooth blade margins without yellow halos or spots',
+      'Smooth blade margins without chlorotic halos or spots',
       'Turgid stem structure and intact leaf cuticle'
     ],
-    immediateAction: [
-      'Maintain standard irrigation and organic fertilization schedule',
-      'Inspect crop leaves weekly for early insect or fungal activity'
+    generalManagement: [
+      'Maintain regular irrigation and balanced organic fertilization',
+      'Inspect crop leaves weekly for early pest or fungal activity'
     ],
-    prevention: [
-      'Continue regular soil enrichment with balanced compost (N-P-K 10-10-10)',
-      'Ensure consistent morning watering at the root base'
-    ],
-    biologicalControl: [
-      'Routine prophylactic neem oil foliar spray (monthly)'
-    ],
-    researchPaperReference: '2025 IEEE Access Baseline Control Group #HC-001'
-  },
-
-  'potato-early-blight': {
-    id: 'potato-early-blight',
-    cropId: 'potato',
-    name: 'Potato Early Blight',
-    scientificName: 'Alternaria solani',
-    severity: 'Moderate',
-    confidence: 92.4,
-    description: 'Fungal brown spots with concentric ring patterns on older foliage, reducing tuber yield if left unmanaged.',
-    symptoms: [
-      'Dark brown angular spots bounded by leaf veins',
-      'Yellow chlorotic leaf tissue around brown lesions',
-      'Brittle leaves curling upwards and dropping'
-    ],
-    immediateAction: [
-      'Strip infected lower leaves and discard away from fields',
-      'Maintain moderate soil moisture without leaf wetting'
-    ],
-    prevention: [
-      'Plant certified disease-resistant seed potatoes',
-      'Ensure adequate nitrogen and potassium fertility to avoid stress'
-    ],
-    biologicalControl: [
-      'Trichoderma harzianum soil amendment and foliage spray'
-    ],
-    chemicalControl: [
-      'Chlorothalonil 75% WP @ 2g/L water'
-    ]
-  },
-
-  'potato-healthy': {
-    id: 'potato-healthy',
-    cropId: 'potato',
-    name: 'Healthy Potato Foliage',
-    scientificName: 'Solanum tuberosum (Healthy)',
-    severity: 'Healthy',
-    confidence: 97.9,
-    description: 'Vigorous potato foliage with no signs of fungal or bacterial lesions.',
-    symptoms: ['Clean foliage', 'Robust leaf density', 'No brown spots'],
-    immediateAction: ['Maintain regular weeding and hilling practices.'],
-    prevention: ['Keep fields clean of nightshade weeds.'],
-    researchPaperReference: '2025 IEEE Access Benchmark #PH-002'
-  },
-
-  'maize-common-rust': {
-    id: 'maize-common-rust',
-    cropId: 'maize',
-    name: 'Maize Common Rust',
-    scientificName: 'Puccinia sorghi',
-    severity: 'Moderate',
-    confidence: 91.5,
-    description: 'Small reddish-brown powdery pustules on both upper and lower leaf surfaces.',
-    symptoms: [
-      'Oval to elongated cinnamon-brown pustules',
-      'Powdery rusty dust (spores) rubbing off on fingers',
-      'Yellowing of heavily pustuled leaf tips'
-    ],
-    immediateAction: [
-      'Apply bio-fungicide at first sign of pustule formation',
-      'Avoid high nitrogen fertilizer application during humid weather'
-    ],
-    prevention: [
-      'Plant resistant corn hybrids with high rust tolerance',
-      'Plant early in the season to avoid peak spore rust migration'
-    ],
-    biologicalControl: [
-      'Bacillus subtilis foliar application'
-    ],
-    chemicalControl: [
-      'Propiconazole 25% EC @ 1ml/L water'
-    ]
-  },
-
-  'maize-healthy': {
-    id: 'maize-healthy',
-    cropId: 'maize',
-    name: 'Healthy Maize Leaf',
-    scientificName: 'Zea mays (Healthy)',
-    severity: 'Healthy',
-    confidence: 99.1,
-    description: 'Clean green leaf blade without rust pustules or blight streaks.',
-    symptoms: ['Smooth green leaf veins', 'No reddish pustules', 'Healthy canopy'],
-    immediateAction: ['Continue recommended weed control and irrigation.'],
-    prevention: ['Ensure adequate plant density.']
-  },
-
-  'rice-leaf-blast': {
-    id: 'rice-leaf-blast',
-    cropId: 'rice',
-    name: 'Rice Leaf Blast',
-    scientificName: 'Magnaporthe oryzae',
-    severity: 'Severe',
-    confidence: 95.0,
-    description: 'Spindle-shaped lesions with grayish-white centers and reddish-brown borders on rice leaves.',
-    symptoms: [
-      'Diamond or spindle-shaped leaf spots',
-      'Grayish-white center with brown margin',
-      'Lesions merging together to burn entire leaves'
-    ],
-    immediateAction: [
-      'Drain standing water from paddy field for 3-4 days to reduce moisture',
-      'Refrain from top-dressing nitrogenous fertilizers'
-    ],
-    prevention: [
-      'Treat seeds with Carbendazim before sowing',
-      'Maintain optimum water management'
-    ],
-    biologicalControl: [
-      'Pseudomonas fluorescens (10g/kg seed treatment)'
-    ],
-    chemicalControl: [
-      'Tricyclazole 75% WP @ 0.6g/L water'
-    ]
-  },
-
-  'rice-healthy': {
-    id: 'rice-healthy',
-    cropId: 'rice',
-    name: 'Healthy Rice Leaf',
-    scientificName: 'Oryza sativa (Healthy)',
-    severity: 'Healthy',
-    confidence: 98.2,
-    description: 'Vigorous paddy foliage free of spindle lesions.',
-    symptoms: ['Intact green leaf blades', 'No blast spots'],
-    immediateAction: ['Maintain water depth at 2-5 cm.'],
-    prevention: ['Balanced N-P-K fertilizer regime.']
-  },
-
-  'banana-black-sigatoka': {
-    id: 'banana-black-sigatoka',
-    cropId: 'banana',
-    name: 'Banana Black Sigatoka',
-    scientificName: 'Pseudocercospora fijiensis',
-    severity: 'Severe',
-    confidence: 93.6,
-    description: 'Dark reddish-brown to black streaks parallel to leaf veins, causing premature leaf death.',
-    symptoms: [
-      'Reddish-brown narrow streaks on lower leaf surface',
-      'Streaks enlarging into dark brown water-soaked spots',
-      'Center of spots dry out to light gray with dark borders'
-    ],
-    immediateAction: [
-      'De-leaf severely infected leaves and bury or burn them outside plantation',
-      'Improve drainage to reduce humidity'
-    ],
-    prevention: [
-      'Maintain wide plant spacing (3m x 2m)',
-      'Prune suckers to ensure adequate sunlight penetration'
-    ],
-    biologicalControl: [
-      'Bacillus amyloliquefaciens sprays'
-    ],
-    chemicalControl: [
-      'Mancozeb 75% WP @ 2.5g/L mixed with mineral oil'
-    ]
-  },
-
-  'chilli-leaf-curl': {
-    id: 'chilli-leaf-curl',
-    cropId: 'chilli',
-    name: 'Chilli Leaf Curl Virus',
-    scientificName: 'Chilli leaf curl virus (ChiLCV)',
-    severity: 'Severe',
-    confidence: 92.8,
-    description: 'Viral disease transmitted by whiteflies causing curling of leaves upwards, puckering, and stunted plant growth.',
-    symptoms: [
-      'Upward curling and cupping of leaf margins',
-      'Thickened leaf veins and stunted internodes',
-      'Shedding of flowers and small distorted fruits'
-    ],
-    immediateAction: [
-      'Uproot and destroy heavily stunted viral-infected plants',
-      'Install yellow sticky traps (15-20 per acre) to catch whiteflies'
-    ],
-    prevention: [
-      'Cover nursery beds with 40-mesh insect-proof netting',
-      'Refrain from planting near old infested solanaceous crops'
-    ],
-    biologicalControl: [
-      'Spray Verticillium lecanii or Neem oil (10,000 ppm) @ 3ml/L water against whitefly vectors'
-    ],
-    chemicalControl: [
-      'Imidacloprid 17.8% SL @ 0.3ml/L water to manage vector whiteflies'
+    preventativeMeasures: [
+      'Continue regular soil compost enrichment',
+      'Ensure consistent morning root watering'
     ]
   }
 };
 
-export const getDiseaseById = (diseaseId: string): DiseaseInfo => {
-  return DISEASES_DATABASE[diseaseId] || DISEASES_DATABASE['tomato-early-blight'];
+export const getDiseaseKnowledgeById = (id: string): DiseaseKnowledge => {
+  return DISEASES_KNOWLEDGE_BASE[id] || DISEASES_KNOWLEDGE_BASE['tomato-early-blight'];
 };
 
-export const getDefaultDiseaseForCrop = (cropId: CropId): DiseaseInfo => {
-  switch (cropId) {
-    case 'tomato':
-      return DISEASES_DATABASE['tomato-early-blight'];
-    case 'potato':
-      return DISEASES_DATABASE['potato-early-blight'];
-    case 'maize':
-      return DISEASES_DATABASE['maize-common-rust'];
-    case 'rice':
-      return DISEASES_DATABASE['rice-leaf-blast'];
-    case 'banana':
-      return DISEASES_DATABASE['banana-black-sigatoka'];
-    case 'chilli':
-      return DISEASES_DATABASE['chilli-leaf-curl'];
-    default:
-      return DISEASES_DATABASE['tomato-early-blight'];
-  }
+export const getDefaultDiseaseKnowledgeForCrop = (_cropId: CropId): DiseaseKnowledge => {
+  return DISEASES_KNOWLEDGE_BASE['tomato-healthy'];
 };

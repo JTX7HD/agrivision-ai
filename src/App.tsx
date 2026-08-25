@@ -2,14 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   Leaf, Camera, Upload, Home, LayoutGrid, ScanLine, History as HistoryIcon,
   Info, ChevronRight, ArrowRight, Menu, X,
-  FlaskConical, ClipboardCheck, ShieldCheck, ArrowLeft,
-  Eye, Layers, Scan
+  FlaskConical, ClipboardCheck
 } from "lucide-react";
 import type { CropId, FullAnalysisResult, ScanItem } from "./models/types";
 import { CROPS_DATA, getCropById } from "./data/cropsData";
 import { analyzeLeafPipeline } from "./services/aiService";
 import { useScanHistory } from "./hooks/useScanHistory";
 import { useCameraStream } from "./hooks/useCameraStream";
+import { DiseaseResultCard } from "./components/result/DiseaseResultCard";
 
 /* ---------------------------------------------------------
    DESIGN TOKENS
@@ -82,55 +82,7 @@ function LeafMark({ size = 28, color = C.forest }: { size?: number; color?: stri
   );
 }
 
-function GrowthRing({ value, size = 132, color = C.forest }: { value: number; size?: number; color?: string }) {
-  const r = size / 2 - 10;
-  const c = 2 * Math.PI * r;
-  const offset = c - (value / 100) * c;
-  return (
-    <div className="relative" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke={C.sandDark} strokeWidth="8" fill="none" />
-        <circle cx={size / 2} cy={size / 2} r={r - 14} stroke={C.sandDark} strokeWidth="1" fill="none" opacity="0.6" />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          stroke={color}
-          strokeWidth="8"
-          fill="none"
-          strokeDasharray={c}
-          strokeDashoffset={offset}
-          strokeLinecap="round"
-          style={{ transition: "stroke-dashoffset 900ms ease" }}
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-2xl font-bold" style={{ color: C.ink, fontFamily: "Manrope" }}>{value}%</span>
-        <span className="text-[11px]" style={{ color: C.inkSoft }}>confidence</span>
-      </div>
-    </div>
-  );
-}
 
-const SEVERITY_STYLES: Record<string, { bg: string; fg: string }> = {
-  Healthy: { bg: "#E7EEDC", fg: C.forest },
-  Low: { bg: "#E7EEDC", fg: C.forest },
-  Mild: { bg: "#F1E4CE", fg: C.brown },
-  Moderate: { bg: "#F1E4CE", fg: C.brown },
-  Severe: { bg: "#F0DAD3", fg: C.rust },
-};
-
-function SeverityTag({ level }: { level: string }) {
-  const s = SEVERITY_STYLES[level] || SEVERITY_STYLES.Moderate;
-  return (
-    <span
-      className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
-      style={{ background: s.bg, color: s.fg }}
-    >
-      {level} Severity
-    </span>
-  );
-}
 
 const NAV_ITEMS = [
   { id: "home", label: "Home", icon: Home },
@@ -436,7 +388,9 @@ function DashboardView({
                   </p>
                 </div>
               </div>
-              <SeverityTag level={s.severity} />
+              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold border bg-emerald-500/10 text-emerald-600 border-emerald-500/30">
+                {s.confidenceLevel || 'High'} Confidence
+              </span>
             </div>
           ))}
         </div>
@@ -736,8 +690,6 @@ function ResultsView({
   result: FullAnalysisResult | null;
   setView: (v: string) => void;
 }) {
-  const [activeTab, setActiveTab] = useState<'lime' | 'sam' | 'yolo' | 'raw'>('lime');
-
   if (!result) {
     return (
       <div className="max-w-2xl mx-auto px-5 py-16 text-center space-y-4">
@@ -753,139 +705,13 @@ function ResultsView({
     );
   }
 
-  const { crop, disease, imageUrl, yoloBoundingBox, limeFeatures } = result;
-
   return (
-    <div className="max-w-2xl mx-auto px-5 py-10 pb-24 md:pb-10">
-      <button onClick={() => setView("scan")} className="flex items-center gap-1.5 text-sm font-medium mb-6" style={{ color: C.inkSoft }}>
-        <ArrowLeft size={15} /> New scan
-      </button>
-
-      <div className="rounded-2xl p-6 mb-6 flex items-center gap-6 flex-wrap shadow-sm border border-sandDark" style={{ background: C.sand }}>
-        <GrowthRing value={disease.confidence} />
-        <div className="flex-1 min-w-[200px]">
-          <p className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: C.olive }}>{crop.name} • {crop.scientificName}</p>
-          <h1 className="text-2xl font-bold mb-2" style={{ color: C.ink, fontFamily: "Manrope" }}>{disease.name}</h1>
-          <SeverityTag level={disease.severity} />
-        </div>
-      </div>
-
-      <div className="rounded-2xl p-5 mb-6 border space-y-3" style={{ borderColor: C.sandDark, background: C.cream }}>
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-sm flex items-center gap-1.5" style={{ color: C.ink }}>
-            <Eye size={16} color={C.forest} />
-            Visual Explainability Overlays
-          </h3>
-          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-sand border border-sandDark" style={{ color: C.inkSoft }}>
-            LIME + SAM
-          </span>
-        </div>
-
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-sand text-xs font-semibold">
-          <button
-            onClick={() => setActiveTab('lime')}
-            className={`flex-1 py-1.5 rounded-lg text-[11px] transition-all flex items-center justify-center gap-1 ${activeTab === 'lime' ? 'bg-forest text-cream font-bold' : ''}`}
-          >
-            <Eye size={13} /> LIME Heatmap
-          </button>
-          <button
-            onClick={() => setActiveTab('sam')}
-            className={`flex-1 py-1.5 rounded-lg text-[11px] transition-all flex items-center justify-center gap-1 ${activeTab === 'sam' ? 'bg-forest text-cream font-bold' : ''}`}
-          >
-            <Layers size={13} /> SAM Segment
-          </button>
-          <button
-            onClick={() => setActiveTab('yolo')}
-            className={`flex-1 py-1.5 rounded-lg text-[11px] transition-all flex items-center justify-center gap-1 ${activeTab === 'yolo' ? 'bg-forest text-cream font-bold' : ''}`}
-          >
-            <Scan size={13} /> YOLO11 Box
-          </button>
-        </div>
-
-        <div className="relative rounded-xl overflow-hidden bg-slate-900 max-h-64 flex items-center justify-center border border-sandDark">
-          <img src={imageUrl} alt="Disease visualization" className="w-full max-h-64 object-contain" />
-
-          {activeTab === 'yolo' && yoloBoundingBox && (
-            <div
-              className="absolute border-2 border-emerald-400 bg-emerald-500/20 rounded-lg pointer-events-none"
-              style={{
-                left: `${yoloBoundingBox.x}%`,
-                top: `${yoloBoundingBox.y}%`,
-                width: `${yoloBoundingBox.width}%`,
-                height: `${yoloBoundingBox.height}%`
-              }}
-            >
-              <span className="absolute -top-5 left-0 text-[9px] font-mono font-bold bg-emerald-600 text-white px-1.5 py-0.5 rounded">
-                YOLO11 ROI
-              </span>
-            </div>
-          )}
-
-          {activeTab === 'lime' && limeFeatures && (
-            <div className="absolute inset-0 pointer-events-none">
-              {limeFeatures.map((feat) => (
-                <div
-                  key={feat.id}
-                  className="absolute rounded-full border border-amber-400 bg-amber-500/40 animate-pulse flex items-center justify-center"
-                  style={{
-                    left: `${feat.x}%`,
-                    top: `${feat.y}%`,
-                    width: `${feat.radius * 2}%`,
-                    height: `${feat.radius * 2}%`,
-                    transform: 'translate(-50%, -50%)'
-                  }}
-                >
-                  <span className="text-[8px] font-mono font-bold bg-black/80 text-amber-300 px-1 py-0.5 rounded">
-                    LIME ROI: {(feat.importanceScore * 100).toFixed(0)}%
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="space-y-5">
-        <div className="p-5 rounded-xl border" style={{ borderColor: C.sandDark }}>
-          <div className="flex items-center gap-2 mb-2">
-            <ScanLine size={16} color={C.forest} />
-            <h3 className="font-semibold text-sm" style={{ color: C.ink }}>What we found</h3>
-          </div>
-          <p className="text-sm leading-relaxed" style={{ color: C.inkSoft }}>{disease.description}</p>
-        </div>
-
-        <div className="p-5 rounded-xl border" style={{ borderColor: C.sandDark }}>
-          <div className="flex items-center gap-2 mb-2">
-            <ClipboardCheck size={16} color={C.forest} />
-            <h3 className="font-semibold text-sm" style={{ color: C.ink }}>Recommended action</h3>
-          </div>
-          <ul className="space-y-1.5 text-sm list-disc list-inside" style={{ color: C.inkSoft }}>
-            {disease.immediateAction.map((act, i) => (
-              <li key={i}>{act}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="p-5 rounded-xl border" style={{ borderColor: C.sandDark }}>
-          <div className="flex items-center gap-2 mb-2">
-            <ShieldCheck size={16} color={C.forest} />
-            <h3 className="font-semibold text-sm" style={{ color: C.ink }}>Prevention & Cultural Practices</h3>
-          </div>
-          <ul className="space-y-1.5 text-sm list-disc list-inside" style={{ color: C.inkSoft }}>
-            {disease.prevention.map((prev, i) => (
-              <li key={i}>{prev}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <button
-        onClick={() => setView("dashboard")}
-        className="w-full mt-6 py-3.5 rounded-lg font-semibold text-sm shadow-md cursor-pointer"
-        style={{ background: C.forest, color: C.cream }}
-      >
-        Done
-      </button>
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <DiseaseResultCard
+        result={result}
+        onScanAnother={() => setView('scan')}
+        onGoToDashboard={() => setView('dashboard')}
+      />
     </div>
   );
 }
@@ -918,7 +744,9 @@ function HistoryView({
                 <p className="text-xs" style={{ color: C.inkSoft }}>{s.diseaseName} · {new Date(s.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
               </div>
             </div>
-            <SeverityTag level={s.severity} />
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold border bg-emerald-500/10 text-emerald-600 border-emerald-500/30">
+              {s.confidenceLevel || 'High'} Confidence
+            </span>
           </div>
         ))}
       </div>
@@ -1005,26 +833,28 @@ export default function AgriVisionAI() {
         scanId: scan.id,
         timestamp: scan.timestamp,
         crop: getCropById(scan.cropId),
+        predictedClassIndex: 1,
+        predictedClassName: 'Tomato___Early_blight',
         disease: {
-          id: 'hist-disease',
+          id: 'tomato-early-blight',
           cropId: scan.cropId,
           name: scan.diseaseName,
           scientificName: scan.scientificName,
-          severity: scan.severity,
-          confidence: scan.confidence,
           description: scan.summary,
-          symptoms: [scan.summary],
-          immediateAction: [scan.recommendationSnippet],
-          prevention: ['Maintain good farm sanitation and morning root watering.']
+          commonSymptoms: [scan.summary],
+          generalManagement: ['Maintain regular watering and good ventilation.'],
+          preventativeMeasures: ['Practice 2-year crop rotation.']
         },
         imageUrl: scan.imageUrl,
         pipelineStages: [],
-        yoloBoundingBox: scan.yoloBoundingBox,
-        samSegmentationDataUrl: scan.imageUrl,
-        samSuccess: true,
-        limeFeatures: scan.limeFeatures || [],
-        limeHeatmapDataUrl: scan.imageUrl,
-        limeSuccess: true,
+        confidence: scan.confidence,
+        confidenceLevel: scan.confidenceLevel || 'High',
+        confidenceLabel: 'High-confidence model prediction',
+        classProbabilities: [
+          { classIndex: 1, className: 'Tomato___Early_blight', displayName: scan.diseaseName, probability: scan.confidence }
+        ],
+        rawLogits: [0, 2.5, 0, 0, 0, 0, 0, 0, 0, 0],
+        imageQuality: { isSuitable: true },
         isMockPrediction: false
       });
     }

@@ -1,6 +1,6 @@
 export type CropId = 'tomato' | 'potato' | 'maize' | 'rice' | 'banana' | 'chilli';
 
-export type SeverityLevel = 'Healthy' | 'Mild' | 'Moderate' | 'Severe';
+export type ConfidenceLevel = 'High' | 'Moderate' | 'Low';
 
 export interface Crop {
   id: CropId;
@@ -14,70 +14,57 @@ export interface Crop {
   sampleImageUrl: string;
 }
 
-export interface BoundingBox {
-  x: number; // percentage 0-100
-  y: number; // percentage 0-100
-  width: number; // percentage
-  height: number; // percentage
-  label: string;
-  confidence: number;
-}
-
-export interface LimeFeature {
-  id: string;
-  x: number; // percentage
-  y: number; // percentage
-  radius: number; // percentage
-  importanceScore: number; // 0-1 scale
-  type: 'positive' | 'negative';
-  label: string;
-}
-
-export interface DiseaseInfo {
+export interface DiseaseKnowledge {
   id: string;
   cropId: CropId;
   name: string;
   scientificName: string;
-  severity: SeverityLevel;
-  confidence: number; // 0-100
   description: string;
-  symptoms: string[];
-  immediateAction: string[];
-  prevention: string[];
-  biologicalControl?: string[];
-  chemicalControl?: string[];
-  researchPaperReference?: string;
+  commonSymptoms: string[];
+  generalManagement: string[];
+  preventativeMeasures: string[];
 }
 
-export type PipelineStageId = 'yolo11' | 'sam' | 'resnet50' | 'lime' | 'onnx';
+export interface ImageQualityStatus {
+  isSuitable: boolean;
+  issueDescription?: string;
+  brightness?: number;
+  contrast?: number;
+}
 
 export interface PipelineStageStatus {
-  id: PipelineStageId;
+  id: string;
   name: string;
   modelName: string;
   description: string;
   status: 'idle' | 'running' | 'completed' | 'failed';
   durationMs: number;
   outputSummary?: string;
-  details?: Record<string, string | number>;
+}
+
+export interface ClassProbability {
+  classIndex: number;
+  className: string;
+  displayName: string;
+  probability: number; // percentage 0 - 100
 }
 
 export interface FullAnalysisResult {
   scanId: string;
   timestamp: string;
   crop: Crop;
-  disease: DiseaseInfo;
+  predictedClassIndex: number;
+  predictedClassName: string;
+  disease: DiseaseKnowledge;
   imageUrl: string;
   pipelineStages: PipelineStageStatus[];
-  yoloBoundingBox?: BoundingBox;
-  samSegmentationDataUrl?: string;
-  samSuccess: boolean;
-  samStatusMessage?: string;
-  limeFeatures: LimeFeature[];
-  limeHeatmapDataUrl?: string;
-  limeSuccess: boolean;
-  limeStatusMessage?: string;
-  isMockPrediction: boolean;
+  confidence: number; // Percentage e.g. 87.4%
+  confidenceLevel: ConfidenceLevel;
+  confidenceLabel: string;
+  classProbabilities: ClassProbability[];
+  rawLogits: number[];
+  imageQuality: ImageQualityStatus;
+  isMockPrediction: false;
   onnxInfo?: {
     modelPath: string;
     modelName: string;
@@ -96,13 +83,10 @@ export interface ScanItem {
   cropName: string;
   diseaseName: string;
   scientificName: string;
-  severity: SeverityLevel;
   confidence: number;
+  confidenceLevel: ConfidenceLevel;
   imageUrl: string;
   summary: string;
-  recommendationSnippet: string;
-  yoloBoundingBox?: BoundingBox;
-  limeFeatures?: LimeFeature[];
   fullResult?: FullAnalysisResult;
 }
 

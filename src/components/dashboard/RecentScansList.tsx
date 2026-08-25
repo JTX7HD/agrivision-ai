@@ -69,12 +69,12 @@ export const RecentScansList: React.FC<RecentScansListProps> = ({
             <div className="flex items-center gap-2 shrink-0">
               <span
                 className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${
-                  scan.severity === 'Healthy'
+                  scan.confidenceLevel === 'High'
                     ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30'
                     : 'bg-amber-500/10 text-amber-500 border-amber-500/30'
                 }`}
               >
-                {scan.severity}
+                {scan.confidenceLevel || 'High'} Confidence
               </span>
 
               <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-emerald-400 transition-colors">

@@ -19,8 +19,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   onSelectCropAndScan
 }) => {
   const totalScans = scans.length;
-  const healthyScans = scans.filter((s) => s.severity === 'Healthy').length;
-  const actionNeededScans = scans.filter((s) => s.severity === 'Moderate' || s.severity === 'Severe').length;
+  const highConfidenceScans = scans.filter((s) => s.confidenceLevel === 'High' || s.confidence >= 80).length;
+  const moderateOrLowScans = scans.filter((s) => s.confidenceLevel !== 'High' && s.confidence < 80).length;
 
   return (
     <div className="space-y-8 pb-8">
@@ -58,18 +58,18 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         />
 
         <MetricCard
-          title="Healthy Leaves"
-          value={healthyScans}
-          subtitle="No pathogen detected"
+          title="High Confidence Predictions"
+          value={highConfidenceScans}
+          subtitle="Confidence >= 80%"
           icon={CheckCircle2}
           colorClass="text-green-400"
           iconBgClass="bg-green-500/10 border border-green-500/20"
         />
 
         <MetricCard
-          title="Action Needed"
-          value={actionNeededScans}
-          subtitle="Moderate or severe lesions"
+          title="Moderate / Low Confidence"
+          value={moderateOrLowScans}
+          subtitle="Requires photo re-check"
           icon={AlertTriangle}
           colorClass="text-amber-400"
           iconBgClass="bg-amber-500/10 border border-amber-500/20"

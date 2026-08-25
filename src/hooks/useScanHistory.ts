@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import type { ScanItem, FullAnalysisResult } from '../models/types';
 import { INITIAL_SCAN_HISTORY } from '../data/initialScanHistory';
 
-const STORAGE_KEY = 'agrivision_scan_history_v1';
+const STORAGE_KEY = 'agrivision_scan_history_v2';
 
 export const useScanHistory = () => {
   const [scans, setScans] = useState<ScanItem[]>(() => {
@@ -33,13 +33,10 @@ export const useScanHistory = () => {
       cropName: result.crop.name,
       diseaseName: result.disease.name,
       scientificName: result.disease.scientificName,
-      severity: result.disease.severity,
-      confidence: result.disease.confidence,
+      confidence: result.confidence,
+      confidenceLevel: result.confidenceLevel,
       imageUrl: result.imageUrl,
       summary: result.disease.description.slice(0, 100) + '...',
-      recommendationSnippet: result.disease.immediateAction[0] || 'Prune affected leaves.',
-      yoloBoundingBox: result.yoloBoundingBox,
-      limeFeatures: result.limeFeatures,
       fullResult: result
     };
 
