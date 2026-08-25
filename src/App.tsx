@@ -4,12 +4,13 @@ import {
   Info, ChevronRight, ArrowRight, Menu, X,
   FlaskConical, ClipboardCheck
 } from "lucide-react";
-import type { CropId, FullAnalysisResult, ScanItem } from "./models/types";
+import type { CropId, FullAnalysisResult, ScanItem, PipelineStageStatus } from "./models/types";
 import { CROPS_DATA, getCropById } from "./data/cropsData";
 import { analyzeLeafPipeline } from "./services/aiService";
 import { useScanHistory } from "./hooks/useScanHistory";
 import { useCameraStream } from "./hooks/useCameraStream";
 import { DiseaseResultCard } from "./components/result/DiseaseResultCard";
+import { PipelineVisualizer } from "./components/analysis/PipelineVisualizer";
 
 /* ---------------------------------------------------------
    DESIGN TOKENS
@@ -609,36 +610,56 @@ function ScanView({
 function AnalysisView({
   selectedImage,
   cropId,
-  onDone
+  onDone,
+  onError
 }: {
   selectedImage: string;
   cropId: CropId;
   onDone: (result: FullAnalysisResult) => void;
+  onError: () => void;
 }) {
-  const steps = [
-    { name: "Stage 1: YOLO11 Leaf Detection", desc: "Locating crop leaf geometry & spatial bounding box..." },
-    { name: "Stage 2: SAM Leaf Segmentation", desc: "Isolating leaf contour and removing soil background..." },
-    { name: "Stage 3: ResNet-50 Disease Classification", desc: "Evaluating deep convolutional features against pathogen database..." },
-    { name: "Stage 4: LIME Explainability", desc: "Generating superpixel feature importance heatmap..." }
-  ];
-  const [stageIndex, setStageIndex] = useState(0);
+  const crop = getCropById(cropId);
+  const [stages, setStages] = useState<PipelineStageStatus[]>([
+    {
+      id: 'quality',
+      name: '1. Image Quality Inspection',
+      modelName: 'Quality Check',
+      description: 'Verifying lighting, focus, and leaf contrast...',
+      status: 'idle',
+      durationMs: 150
+    },
+    {
+      id: 'onnx',
+      name: '2. MobileNetV3 ONNX Inference',
+      modelName: 'tomato_disease_mobilenetv3.onnx',
+      description: 'Evaluating Float32 tensor [1, 3, 224, 224] via client-side WASM runtime...',
+      status: 'idle',
+      durationMs: 450
+    }
+  ]);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   useEffect(() => {
     let isSubscribed = true;
 
     const executePipeline = async () => {
-      const result = await analyzeLeafPipeline(selectedImage, cropId, (stage) => {
-        if (!isSubscribed) return;
-        if (stage.id === 'yolo11') setStageIndex(0);
-        if (stage.id === 'sam') setStageIndex(1);
-        if (stage.id === 'resnet50') setStageIndex(2);
-        if (stage.id === 'lime') setStageIndex(3);
-      });
+      try {
+        const result = await analyzeLeafPipeline(selectedImage, cropId, (updatedStage) => {
+          if (!isSubscribed) return;
+          setStages((prevStages) =>
+            prevStages.map((s) => (s.id === updatedStage.id ? { ...updatedStage } : s))
+          );
+        });
 
-      if (isSubscribed) {
-        setTimeout(() => {
-          onDone(result);
-        }, 600);
+        if (isSubscribed) {
+          setTimeout(() => {
+            onDone(result);
+          }, 400);
+        }
+      } catch (err) {
+        if (!isSubscribed) return;
+        const errMsg = err instanceof Error ? err.message : 'Analysis failed. Please select a clearer leaf photo.';
+        setAnalysisError(errMsg);
       }
     };
 
@@ -649,33 +670,31 @@ function AnalysisView({
     };
   }, [selectedImage, cropId, onDone]);
 
-  return (
-    <div className="max-w-md mx-auto px-5 py-20 flex flex-col items-center text-center">
-      <div className="relative w-24 h-24 mb-6">
-        <svg viewBox="0 0 100 100" className="w-full h-full animate-spin" style={{ animationDuration: "2.2s" }}>
-          <circle cx="50" cy="50" r="40" stroke={C.sandDark} strokeWidth="5" fill="none" />
-          <path
-            d="M50 10 A40 40 0 0 1 90 50"
-            stroke={C.forest}
-            strokeWidth="5"
-            fill="none"
-            strokeLinecap="round"
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Leaf size={30} color={C.leaf} />
+  if (analysisError) {
+    return (
+      <div className="max-w-md mx-auto px-5 py-16 text-center space-y-5">
+        <div className="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400">
+          <FlaskConical size={32} />
         </div>
+        <h3 className="text-xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "Manrope" }}>
+          Analysis Warning
+        </h3>
+        <p className="text-sm text-slate-400 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+          {analysisError}
+        </p>
+        <button
+          onClick={onError}
+          className="px-6 py-3 rounded-2xl font-bold text-sm bg-emerald-500 hover:bg-emerald-600 text-slate-950 transition-all shadow-lg shadow-emerald-500/20"
+        >
+          Select Another Image
+        </button>
       </div>
+    );
+  }
 
-      <h3 className="text-xl font-bold mb-1" style={{ color: C.ink, fontFamily: "Manrope" }}>
-        Checking your crop leaf...
-      </h3>
-      <p className="text-xs font-semibold text-emerald-700 mb-2">
-        {steps[stageIndex]?.name}
-      </p>
-      <p className="text-xs max-w-xs text-slate-500">
-        {steps[stageIndex]?.desc}
-      </p>
+  return (
+    <div className="max-w-3xl mx-auto px-4 py-8">
+      <PipelineVisualizer crop={crop} imageUrl={selectedImage} stages={stages} />
     </div>
   );
 }
@@ -882,6 +901,7 @@ export default function AgriVisionAI() {
           selectedImage={selectedImage}
           cropId={selectedCropId}
           onDone={handleAnalysisDone}
+          onError={() => setView("scan")}
         />
       )}
       {view === "results" && <ResultsView result={activeResult} setView={setView} />}
