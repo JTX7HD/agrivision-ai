@@ -1,4 +1,3 @@
-import * as ort from 'onnxruntime-web';
 import { loadInferenceSession } from './modelLoader';
 import { preprocessImageToTensor } from './imagePreprocessor';
 import { computeSoftmax } from './softmax';
@@ -9,6 +8,9 @@ export async function runONNXInference(
   modelPath: string = '/models/tomato_disease_mobilenetv3.onnx'
 ): Promise<FormattedONNXResult> {
   const startTime = performance.now();
+
+  // Dynamic import onnxruntime-web for client-side tensor construction
+  const ort = await import('onnxruntime-web');
 
   // 1. Load ONNX model once (reused via singleton)
   const session = await loadInferenceSession(modelPath);
@@ -21,7 +23,7 @@ export async function runONNXInference(
 
   // Determine input and output tensor names from session metadata
   const inputName = session.inputNames[0] || 'input';
-  const feeds: Record<string, ort.Tensor> = { [inputName]: inputTensor };
+  const feeds: Record<string, any> = { [inputName]: inputTensor };
 
   // 4. Run model inference locally in the browser
   const results = await session.run(feeds);

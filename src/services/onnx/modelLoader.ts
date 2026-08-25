@@ -1,11 +1,9 @@
-import * as ort from 'onnxruntime-web';
-
-let cachedSession: ort.InferenceSession | null = null;
-let sessionLoadingPromise: Promise<ort.InferenceSession> | null = null;
+let cachedSession: any = null;
+let sessionLoadingPromise: Promise<any> | null = null;
 
 export async function loadInferenceSession(
   modelPath: string = '/models/tomato_disease_mobilenetv3.onnx'
-): Promise<ort.InferenceSession> {
+): Promise<any> {
   if (cachedSession) {
     return cachedSession;
   }
@@ -16,17 +14,16 @@ export async function loadInferenceSession(
 
   sessionLoadingPromise = (async () => {
     try {
-      // Configure WASM path if needed for ONNX Runtime Web
+      // Dynamic import to prevent main-bundle bloat and ensure fast initial React render on Vercel
+      const ort = await import('onnxruntime-web');
       ort.env.wasm.numThreads = 1;
       
-      // Fetch model binary as ArrayBuffer for resilient client-side execution
       const response = await fetch(modelPath);
       if (!response.ok) {
         throw new Error(`Failed to load ONNX model file from ${modelPath}: ${response.statusText}`);
       }
       const modelArrayBuffer = await response.arrayBuffer();
 
-      // Create reusable inference session
       const session = await ort.InferenceSession.create(modelArrayBuffer, {
         executionProviders: ['wasm'],
         graphOptimizationLevel: 'all'
