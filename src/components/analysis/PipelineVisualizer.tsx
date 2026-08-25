@@ -1,6 +1,6 @@
 import React from 'react';
 import type { PipelineStageStatus, Crop } from '../../models/types';
-import { Cpu, CheckCircle2, Loader2, Layers, Eye, ScanSearch, ShieldCheck } from 'lucide-react';
+import { Cpu, CheckCircle2, Loader2, Layers, Eye, ShieldCheck } from 'lucide-react';
 
 interface PipelineVisualizerProps {
   crop: Crop;
@@ -15,11 +15,9 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
 }) => {
   const getStageIcon = (stageId: string) => {
     switch (stageId) {
-      case 'yolo11':
-        return ScanSearch;
       case 'sam':
         return Layers;
-      case 'resnet50':
+      case 'onnx':
         return Cpu;
       case 'lime':
         return Eye;
@@ -35,13 +33,13 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
           <Cpu className="w-4 h-4 text-emerald-400 animate-pulse" />
-          <span>IEEE 2025 Hierarchical 4-Stage AI Pipeline</span>
+          <span>SAM + MobileNetV3 ONNX + LIME Explainable AI Pipeline</span>
         </div>
         <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
           Analyzing {crop.name} Leaf...
         </h2>
         <p className="text-sm text-slate-400 max-w-lg mx-auto">
-          Executing multi-stage neural network models: Object Detection $\rightarrow$ Neural Segmentation $\rightarrow$ Deep Classification $\rightarrow$ LIME Explainability.
+          Executing pipeline: Leaf Segmentation (SAM) $\rightarrow$ ONNX Classification (MobileNetV3) $\rightarrow$ LIME Visual Explanation.
         </p>
       </div>
 
@@ -53,22 +51,15 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
           <img
             src={imageUrl}
             alt="Leaf under AI analysis"
-            className="w-full h-full object-cover opacity-80"
+            className="w-full h-full object-cover opacity-85"
           />
 
           {/* Animated Scanning Laser Line */}
           <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_#10b981] animate-[bounce_2s_infinite]" />
 
-          {/* Bounding Box Visualizer Animation */}
-          <div className="absolute inset-8 border-2 border-emerald-400/70 rounded-xl pointer-events-none animate-pulse flex items-start justify-end p-2">
-            <span className="text-[10px] font-mono bg-emerald-950/90 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/40">
-              YOLO11 ROI
-            </span>
-          </div>
-
           <div className="absolute bottom-3 inset-x-3 bg-slate-950/85 backdrop-blur-md px-3 py-2 rounded-xl text-[11px] text-emerald-300 flex items-center justify-between border border-emerald-900/60">
             <span>Crop: {crop.name}</span>
-            <span className="font-semibold text-white">4096 Superpixels</span>
+            <span className="font-semibold text-white">MobileNetV3 224x224 Tensor</span>
           </div>
         </div>
 
@@ -139,7 +130,7 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
 
       <div className="text-center text-xs text-slate-500 flex items-center justify-center gap-2">
         <ShieldCheck className="w-4 h-4 text-emerald-500" />
-        <span>Processing image strictly locally & in mock pipeline environment for Review 1.</span>
+        <span>Client-Side MobileNetV3 ONNX + Real SAM & LIME Explainability Engine</span>
       </div>
 
     </div>

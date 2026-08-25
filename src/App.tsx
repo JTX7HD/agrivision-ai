@@ -1019,11 +1019,13 @@ export default function AgriVisionAI() {
         },
         imageUrl: scan.imageUrl,
         pipelineStages: [],
-        yoloBoundingBox: scan.yoloBoundingBox || { x: 20, y: 20, width: 60, height: 60, label: 'Leaf', confidence: 0.95 },
+        yoloBoundingBox: scan.yoloBoundingBox,
         samSegmentationDataUrl: scan.imageUrl,
+        samSuccess: true,
         limeFeatures: scan.limeFeatures || [],
         limeHeatmapDataUrl: scan.imageUrl,
-        isMockPrediction: true
+        limeSuccess: true,
+        isMockPrediction: false
       });
     }
     setView("results");

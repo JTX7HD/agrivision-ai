@@ -69,10 +69,14 @@ export interface FullAnalysisResult {
   disease: DiseaseInfo;
   imageUrl: string;
   pipelineStages: PipelineStageStatus[];
-  yoloBoundingBox: BoundingBox;
-  samSegmentationDataUrl: string;
+  yoloBoundingBox?: BoundingBox;
+  samSegmentationDataUrl?: string;
+  samSuccess: boolean;
+  samStatusMessage?: string;
   limeFeatures: LimeFeature[];
-  limeHeatmapDataUrl: string;
+  limeHeatmapDataUrl?: string;
+  limeSuccess: boolean;
+  limeStatusMessage?: string;
   isMockPrediction: boolean;
   onnxInfo?: {
     modelPath: string;

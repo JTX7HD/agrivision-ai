@@ -15,7 +15,18 @@ export const DiseaseResultCard: React.FC<DiseaseResultCardProps> = ({
   onScanAnother,
   onGoToDashboard
 }) => {
-  const { crop, disease, imageUrl, yoloBoundingBox, limeFeatures } = result;
+  const {
+    crop,
+    disease,
+    imageUrl,
+    samSegmentationDataUrl,
+    samSuccess,
+    samStatusMessage,
+    limeFeatures,
+    limeHeatmapDataUrl,
+    limeSuccess,
+    limeStatusMessage
+  } = result;
 
   React.useEffect(() => {
     if (disease.severity === 'Healthy') {
@@ -75,17 +86,9 @@ export const DiseaseResultCard: React.FC<DiseaseResultCardProps> = ({
             </div>
 
             <div className="text-xs font-mono text-slate-300">
-              Model Confidence: <span className="font-extrabold text-emerald-400">{disease.confidence}%</span>
+              MobileNetV3 ONNX: <span className="font-extrabold text-emerald-400">{disease.confidence}%</span>
             </div>
           </div>
-        </div>
-
-        {/* Demo Flag Notice */}
-        <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs">
-          <Sparkles className="w-4 h-4 shrink-0 text-amber-400" />
-          <span>
-            <strong className="font-bold">Interim Demo Flag:</strong> Prototype neural prediction output generated via simulated IEEE 4-stage pipeline abstraction.
-          </span>
         </div>
 
         {/* Overview Description */}
@@ -95,12 +98,12 @@ export const DiseaseResultCard: React.FC<DiseaseResultCardProps> = ({
 
       </div>
 
-      {/* LIME & Visual Overlays Component */}
+      {/* LIME & SAM Visual Overlays Component */}
       <div className="bg-slate-900 rounded-3xl border border-slate-800 p-6 shadow-xl space-y-4">
         <h3 className="text-base font-bold text-white flex items-center justify-between">
           <span>AI Visual Explainability & Segmentation</span>
           <span className="text-xs font-mono text-emerald-400 bg-emerald-950 px-2.5 py-0.5 rounded border border-emerald-800">
-            LIME + SAM
+            SAM + LIME
           </span>
         </h3>
 
@@ -108,8 +111,13 @@ export const DiseaseResultCard: React.FC<DiseaseResultCardProps> = ({
           imageUrl={imageUrl}
           cropName={crop.name}
           diseaseName={disease.name}
-          boundingBox={yoloBoundingBox}
+          samSegmentationDataUrl={samSegmentationDataUrl}
+          samSuccess={samSuccess}
+          samStatusMessage={samStatusMessage}
           limeFeatures={limeFeatures}
+          limeHeatmapDataUrl={limeHeatmapDataUrl}
+          limeSuccess={limeSuccess}
+          limeStatusMessage={limeStatusMessage}
         />
       </div>
 
