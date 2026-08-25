@@ -9,6 +9,25 @@ export async function preprocessImageToTensor(
   targetWidth = 224,
   targetHeight = 224
 ): Promise<Float32Array> {
+  // Ensure external http/https URLs are fetched cleanly as Blobs to avoid CORS canvas tainting
+  let safeDataUrl = imageDataUrl;
+  if (imageDataUrl.startsWith('http://') || imageDataUrl.startsWith('https://')) {
+    try {
+      const res = await fetch(imageDataUrl, { mode: 'cors' });
+      if (res.ok) {
+        const blob = await res.blob();
+        safeDataUrl = await new Promise<string>((res, rej) => {
+          const reader = new FileReader();
+          reader.onloadend = () => res(reader.result as string);
+          reader.onerror = rej;
+          reader.readAsDataURL(blob);
+        });
+      }
+    } catch (e) {
+      console.warn('CORS fetch fallback for image preprocessing:', e);
+    }
+  }
+
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -25,8 +44,23 @@ export async function preprocessImageToTensor(
           return;
         }
 
-        // Draw image resized to 224 x 224
-        ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+        // Calculate aspect-preserving center crop parameters
+        const srcWidth = img.width;
+        const srcHeight = img.height;
+        const srcAspect = srcWidth / srcHeight;
+        const targetAspect = targetWidth / targetHeight;
+
+        let sx = 0, sy = 0, sw = srcWidth, sh = srcHeight;
+        if (srcAspect > targetAspect) {
+          sw = srcHeight * targetAspect;
+          sx = (srcWidth - sw) / 2;
+        } else {
+          sh = srcWidth / targetAspect;
+          sy = (srcHeight - sh) / 2;
+        }
+
+        // Draw center-cropped aspect-preserved leaf image onto 224x224 canvas
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetWidth, targetHeight);
         const imgData = ctx.getImageData(0, 0, targetWidth, targetHeight);
         const data = imgData.data;
 
@@ -59,6 +93,6 @@ export async function preprocessImageToTensor(
       reject(new Error('Failed to load leaf image for ONNX preprocessing. Invalid image source.'));
     };
 
-    img.src = imageDataUrl;
+    img.src = safeDataUrl;
   });
 }
