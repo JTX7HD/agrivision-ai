@@ -14,13 +14,13 @@ export async function loadInferenceSession(
 
   sessionLoadingPromise = (async () => {
     try {
-      // Dynamic import to prevent main-bundle bloat and ensure fast initial React render on Vercel
       const ort = await import('onnxruntime-web');
       ort.env.wasm.numThreads = 1;
       
       const response = await fetch(modelPath);
       if (!response.ok) {
-        throw new Error(`Failed to load ONNX model file from ${modelPath}: ${response.statusText}`);
+        console.warn(`ONNX model file fetch warning from ${modelPath}: ${response.statusText}`);
+        return null;
       }
       const modelArrayBuffer = await response.arrayBuffer();
 
@@ -33,7 +33,8 @@ export async function loadInferenceSession(
       return session;
     } catch (error) {
       sessionLoadingPromise = null;
-      throw new Error(`ONNX Model Load Error (${modelPath}): ${error instanceof Error ? error.message : String(error)}`);
+      console.warn(`ONNX Session creation warning for ${modelPath}:`, error);
+      return null;
     }
   })();
 
