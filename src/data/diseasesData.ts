@@ -1,6 +1,31 @@
 import type { DiseaseInfo, CropId } from '../models/types';
 
 export const DISEASES_DATABASE: Record<string, DiseaseInfo> = {
+  'tomato-bacterial-spot': {
+    id: 'tomato-bacterial-spot',
+    cropId: 'tomato',
+    name: 'Tomato Bacterial Spot',
+    scientificName: 'Xanthomonas perforans',
+    severity: 'Severe',
+    confidence: 95.0,
+    description: 'Bacterial infection causing small, dark, water-soaked spots on foliage that become dark brown and greasy with yellow halos.',
+    symptoms: [
+      'Small (1-3 mm) water-soaked dark spots on leaves',
+      'Lesions turn dark brown to black with yellow halos',
+      'Leaf drop in severe infestations exposing fruit to sunscald'
+    ],
+    immediateAction: [
+      'Remove and destroy infected plant debris immediately',
+      'Avoid working in wet fields or overhead irrigation'
+    ],
+    prevention: [
+      'Use certified pathogen-free seeds and disease-resistant cultivars',
+      'Apply protective copper bactericides early in the season'
+    ],
+    biologicalControl: ['Bacillus subtilis foliar sprays'],
+    chemicalControl: ['Copper hydroxide combined with Mancozeb']
+  },
+
   'tomato-early-blight': {
     id: 'tomato-early-blight',
     cropId: 'tomato',
@@ -70,6 +95,156 @@ export const DISEASES_DATABASE: Record<string, DiseaseInfo> = {
       'Cymoxanil + Mancozeb systemically applied'
     ],
     researchPaperReference: '2025 IEEE Access Tomato Disease Benchmark Dataset #TB-2025-09'
+  },
+
+  'tomato-leaf-mold': {
+    id: 'tomato-leaf-mold',
+    cropId: 'tomato',
+    name: 'Tomato Leaf Mold',
+    scientificName: 'Passalora fulva',
+    severity: 'Moderate',
+    confidence: 92.5,
+    description: 'Fungal disease thriving in high humidity, producing pale green or yellow spots on upper leaf surfaces and velvety olive-green downy mold underneath.',
+    symptoms: [
+      'Pale green to pale yellow spots on upper leaf surface',
+      'Olive-green to dark brown velvety mold growth on leaf undersides',
+      'Affected leaves wither and drop off prematurely'
+    ],
+    immediateAction: [
+      'Increase greenhouse/field ventilation to reduce relative humidity below 85%',
+      'Prune dense foliage to enhance internal airflow'
+    ],
+    prevention: [
+      'Plant leaf mold resistant cultivars (Fulvia resistant lines)',
+      'Avoid night watering and foliage wetness'
+    ],
+    biologicalControl: ['Trichoderma harzianum foliar treatment'],
+    chemicalControl: ['Copper-based fungicides or Chlorothalonil']
+  },
+
+  'tomato-septoria-leaf-spot': {
+    id: 'tomato-septoria-leaf-spot',
+    cropId: 'tomato',
+    name: 'Tomato Septoria Leaf Spot',
+    scientificName: 'Septoria lycopersici',
+    severity: 'Moderate',
+    confidence: 93.8,
+    description: 'Fungal leaf spot producing numerous small circular lesions with dark brown borders and light gray/tan centers containing tiny black fruiting bodies (pycnidia).',
+    symptoms: [
+      'Small circular spots (1.5-3 mm) with gray centers and dark brown margins',
+      'Tiny black specks inside center of leaf spots',
+      'Defoliation starting from oldest lower leaves moving upward'
+    ],
+    immediateAction: [
+      'Remove infected lower foliage immediately',
+      'Mulch soil to inhibit spore splashing'
+    ],
+    prevention: [
+      'Practice 3-year crop rotation',
+      'Maintain wide spacing and weed control around foliage'
+    ],
+    biologicalControl: ['Bacillus subtilis bio-fungicide'],
+    chemicalControl: ['Mancozeb or Copper hydroxide sprays']
+  },
+
+  'tomato-spider-mites': {
+    id: 'tomato-spider-mites',
+    cropId: 'tomato',
+    name: 'Two-Spotted Spider Mite Damage',
+    scientificName: 'Tetranychus urticae',
+    severity: 'Moderate',
+    confidence: 91.7,
+    description: 'Pest infestation caused by microscopic spider mites feeding on leaf sap, creating yellow stippling/speckling and fine silk webbing underneath leaves.',
+    symptoms: [
+      'Fine white to yellow stippling dots on upper leaf surfaces',
+      'Silky webbing visible on leaf undersides and shoot tips',
+      'Leaves turn bronze, dry up, and curl completely'
+    ],
+    immediateAction: [
+      'Spray leaf undersides with strong water jets to dislodge mite webbing',
+      'Isolate infested plants'
+    ],
+    prevention: [
+      'Maintain adequate humidity; avoid dry dusty field conditions',
+      'Release predatory mites (Phytoseiulus persimilis)'
+    ],
+    biologicalControl: ['Insecticidal soap or 1% Neem oil foliar spray'],
+    chemicalControl: ['Abamectin or Spiromesifen miticide']
+  },
+
+  'tomato-target-spot': {
+    id: 'tomato-target-spot',
+    cropId: 'tomato',
+    name: 'Tomato Target Spot',
+    scientificName: 'Corynespora cassiicola',
+    severity: 'Moderate',
+    confidence: 92.1,
+    description: 'Fungal pathogen causing brown spots on leaves with faint concentric rings, leading to premature leaf blighting under warm humid conditions.',
+    symptoms: [
+      'Pinpoint brown spots enlarging into circular target-patterned lesions',
+      'Yellow chlorotic halos surrounding brown necrotic spots',
+      'Blighting and collapse of foliage in warm moist canopy'
+    ],
+    immediateAction: [
+      'Prune symptomatic foliage and increase sunlight exposure',
+      'Switch from overhead sprinklers to drip irrigation'
+    ],
+    prevention: [
+      'Clean plant residue after harvest',
+      'Rotate crops with non-host species'
+    ],
+    biologicalControl: ['Bacillus amyloliquefaciens sprays'],
+    chemicalControl: ['Azoxystrobin or Chlorothalonil protective spray']
+  },
+
+  'tomato-yellow-leaf-curl-virus': {
+    id: 'tomato-yellow-leaf-curl-virus',
+    cropId: 'tomato',
+    name: 'Tomato Yellow Leaf Curl Virus (TYLCV)',
+    scientificName: 'Begomovirus (TYLCV)',
+    severity: 'Severe',
+    confidence: 97.4,
+    description: 'Devastating viral disease transmitted by silverleaf whiteflies (Bemisia tabaci), causing upward leaf cupping, severe yellowing, and bushy stunted growth.',
+    symptoms: [
+      'Upward curling and cupping of leaf margins with severe yellowing',
+      'Marked reduction in leaf size and leaf puckering',
+      'Severe plant stunting and failure of flower/fruit set'
+    ],
+    immediateAction: [
+      'Promptly uproot and destroy infected viral plants',
+      'Deploy yellow sticky traps (15 per acre) to monitor whitefly vector population'
+    ],
+    prevention: [
+      'Use TYLCV-resistant tomato hybrids (e.g., Ty-1/Ty-3 resistance genes)',
+      'Install 50-mesh insect-proof netting over nursery beds'
+    ],
+    biologicalControl: ['Neem oil (10,000 ppm) or Beauveria bassiana vector sprays'],
+    chemicalControl: ['Imidacloprid or Thiamethoxam systemic insecticide against whiteflies']
+  },
+
+  'tomato-mosaic-virus': {
+    id: 'tomato-mosaic-virus',
+    cropId: 'tomato',
+    name: 'Tomato Mosaic Virus (ToMV)',
+    scientificName: 'Tobamovirus (ToMV)',
+    severity: 'Severe',
+    confidence: 96.0,
+    description: 'Highly contagious mechanical virus causing mottled light and dark green mosaic patterns, distorted fern-like leaves, and plant stunting.',
+    symptoms: [
+      'Alternating light green and dark green mosaic patches on leaves',
+      'Distorted, narrow, stringy or "shoestring" foliage',
+      'Internal browning of fruit walls and stunted growth'
+    ],
+    immediateAction: [
+      'Remove and burn infected plants immediately; do not compost',
+      'Wash hands thoroughly with soap/trisodium phosphate before handling healthy plants'
+    ],
+    prevention: [
+      'Use certified virus-free seeds (heat-treated or trisodium phosphate disinfected)',
+      'Prohibit tobacco product use near crop fields'
+    ],
+    biologicalControl: ['Cross-protection with mild viral strains where permitted'],
+    chemicalControl: ['No chemical cure exists for viruses; focus on strict sanitation and rogueing']
   },
 
   'tomato-healthy': {

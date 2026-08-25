@@ -102,11 +102,17 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({
         </p>
       </div>
 
-      <div className="bg-gradient-to-r from-emerald-900/20 via-green-900/10 to-slate-900/40 p-4 rounded-2xl border border-emerald-800/40 shadow-sm">
-        <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-          <Sparkles className="w-4 h-4 text-emerald-400" />
-          Photo Quality Guidance for High AI Accuracy
-        </h4>
+      <div className="bg-gradient-to-r from-emerald-900/20 via-green-900/10 to-slate-900/40 p-4 rounded-2xl border border-emerald-800/40 shadow-sm space-y-3">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-4 h-4 text-emerald-400" />
+            Photo Quality Guidance for High AI Accuracy
+          </h4>
+          <span className="text-[11px] font-mono text-emerald-300 bg-slate-950 px-2.5 py-1 rounded-lg border border-emerald-800/60 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            ONNX: public/models/tomato_disease_mobilenetv3.onnx
+          </span>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-slate-300">
           <div className="flex items-center gap-2 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
             <Sun className="w-4 h-4 text-amber-400 shrink-0" />

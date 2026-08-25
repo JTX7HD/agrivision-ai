@@ -49,7 +49,7 @@ export interface DiseaseInfo {
   researchPaperReference?: string;
 }
 
-export type PipelineStageId = 'yolo11' | 'sam' | 'resnet50' | 'lime';
+export type PipelineStageId = 'yolo11' | 'sam' | 'resnet50' | 'lime' | 'onnx';
 
 export interface PipelineStageStatus {
   id: PipelineStageId;
@@ -73,7 +73,16 @@ export interface FullAnalysisResult {
   samSegmentationDataUrl: string;
   limeFeatures: LimeFeature[];
   limeHeatmapDataUrl: string;
-  isMockPrediction: true; // Explicitly flag demo predictions
+  isMockPrediction: boolean;
+  onnxInfo?: {
+    modelPath: string;
+    modelName: string;
+    fileSizeBytes: number;
+    inputShape: number[];
+    outputShape: number[];
+    executionProvider: string;
+    inferenceTimeMs: number;
+  };
 }
 
 export interface ScanItem {

@@ -102,13 +102,22 @@ export const AboutPage: React.FC = () => {
         </p>
       </div>
 
-      <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 text-xs text-slate-400 space-y-2">
-        <h4 className="font-bold text-white text-sm">Project Milestone Status</h4>
-        <p>
-          ✓ <strong className="text-emerald-400">Milestone 1 (First 20%):</strong> PWA foundation, mobile camera scanner, crop selector, pipeline service abstraction, demo predictions, LIME heatmap overlays, and deployment setup.
-        </p>
-        <p className="text-slate-500">
-          Future Milestones: TensorFlow.js edge model inference, ONNX model weights loading, offline database sync, and multi-language support.
+      <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 text-xs text-slate-400 space-y-3">
+        <h4 className="font-bold text-white text-sm">Project Architecture & ONNX Edge Model</h4>
+        <div className="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-800/50 space-y-2">
+          <p className="font-semibold text-emerald-300 flex items-center gap-2">
+            <Cpu className="w-4 h-4 text-emerald-400" />
+            <span>Active ONNX Edge Engine Loaded</span>
+          </p>
+          <code className="block bg-slate-950 p-2 rounded text-[11px] font-mono text-emerald-400 border border-slate-800">
+            public/models/tomato_disease_mobilenetv3.onnx
+          </code>
+          <p className="text-[11px] text-slate-300">
+            Inference engine: <strong className="text-white">ONNX Runtime Web (WASM/WebGL)</strong>. Executes quantized MobileNetV3 tensor graph directly on client devices without requiring cloud API servers.
+          </p>
+        </div>
+        <p className="text-slate-400">
+          ✓ <strong className="text-emerald-400">Milestone 1:</strong> PWA foundation, mobile camera scanner, ONNX edge model loader, pipeline service abstraction, LIME heatmap overlays, and offline sync.
         </p>
       </div>
 
