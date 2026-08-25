@@ -1,6 +1,7 @@
 import React from 'react';
 import type { FullAnalysisResult } from '../../models/types';
 import { AlertCircle, CheckCircle2, AlertTriangle, Sparkles, ArrowRight, ShieldAlert, BookOpen, Sprout } from 'lucide-react';
+import { ONNXDebugPanel } from './ONNXDebugPanel';
 
 interface DiseaseResultCardProps {
   result: FullAnalysisResult;
@@ -183,6 +184,9 @@ export const DiseaseResultCard: React.FC<DiseaseResultCardProps> = ({
         </div>
 
       </div>
+
+      {/* Developer ONNX Debugger Panel */}
+      <ONNXDebugPanel result={result} />
 
       {/* Mandatory AI Disclaimer */}
       <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-900/40 text-amber-200 text-xs text-center flex items-center justify-center gap-2">

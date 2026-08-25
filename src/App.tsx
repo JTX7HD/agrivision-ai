@@ -835,6 +835,7 @@ export default function AgriVisionAI() {
 
   const handleStartAnalysis = () => {
     if (!selectedImage) return;
+    setActiveResult(null);
     setView("analysis");
   };
 

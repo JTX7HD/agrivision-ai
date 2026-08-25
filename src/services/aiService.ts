@@ -1,6 +1,5 @@
 import type { CropId, FullAnalysisResult, PipelineStageStatus } from '../models/types';
 import { getCropById } from '../data/cropsData';
-import { getDefaultDiseaseKnowledgeForCrop } from '../data/diseasesData';
 import { validateImageQuality } from './onnx/imageQualityCheck';
 import { runONNXInference } from './onnx/inferenceEngine';
 
@@ -52,8 +51,8 @@ export const analyzeLeafPipeline = async (
   };
   onProgress?.(stage2);
 
-  let onnxResult = null;
-  let disease = getDefaultDiseaseKnowledgeForCrop(cropId);
+  let onnxResult;
+  let disease;
 
   try {
     onnxResult = await runONNXInference(imageDataUrl);
