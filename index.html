@@ -13,13 +13,21 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
+      // Clear legacy service worker registrations and stale caches to prevent blank white screens
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').then((reg) => {
-            reg.update();
-          }).catch((err) => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          for (const registration of registrations) {
+            registration.unregister();
+          }
+        });
+      }
+      if ('caches' in window) {
+        caches.keys().then((names) => {
+          for (const name of names) {
+            if (name.includes('agrivision-v1')) {
+              caches.delete(name);
+            }
+          }
         });
       }
     </script>
