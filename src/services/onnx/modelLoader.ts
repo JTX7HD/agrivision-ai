@@ -16,6 +16,8 @@ export async function loadInferenceSession(
     try {
       const ort = await import('onnxruntime-web');
       ort.env.wasm.numThreads = 1;
+      // Configure wasmPaths to load official WebAssembly binaries in production (Vercel, Netlify, mobile)
+      ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.29.0/dist/';
       
       const response = await fetch(modelPath);
       const contentType = response.headers.get('content-type') || '';
