@@ -1,25 +1,28 @@
-let cachedSession: any = null;
-let sessionLoadingPromise: Promise<any> | null = null;
+const cachedSessions = new Map<string, any>();
+const sessionLoadingPromises = new Map<string, Promise<any>>();
 
 export async function loadInferenceSession(
-  modelPath: string = '/models/tomato_disease_mobilenetv3.onnx'
+  modelPath: string = '/models/tomato_mobilenetv3_v2.onnx'
 ): Promise<any> {
-  if (cachedSession) {
-    return cachedSession;
+  if (cachedSessions.has(modelPath)) {
+    return cachedSessions.get(modelPath);
   }
 
-  if (sessionLoadingPromise) {
-    return sessionLoadingPromise;
+  if (sessionLoadingPromises.has(modelPath)) {
+    return sessionLoadingPromises.get(modelPath);
   }
 
-  sessionLoadingPromise = (async () => {
+  const promise = (async () => {
     try {
       const ort = await import('onnxruntime-web');
       ort.env.wasm.numThreads = 1;
       
       const response = await fetch(modelPath);
-      if (!response.ok) {
-        console.warn(`ONNX model file fetch warning from ${modelPath}: ${response.statusText}`);
+      const contentType = response.headers.get('content-type') || '';
+      if (!response.ok || contentType.includes('text/html')) {
+        console.warn(
+          `ONNX model file '${modelPath}' not found on server (status: ${response.status}, content-type: ${contentType}). Ensure the file exists in public/models/.`
+        );
         return null;
       }
       const modelArrayBuffer = await response.arrayBuffer();
@@ -29,14 +32,16 @@ export async function loadInferenceSession(
         graphOptimizationLevel: 'all'
       });
 
-      cachedSession = session;
+      cachedSessions.set(modelPath, session);
       return session;
     } catch (error) {
-      sessionLoadingPromise = null;
+      sessionLoadingPromises.delete(modelPath);
+      cachedSessions.delete(modelPath);
       console.warn(`ONNX Session creation warning for ${modelPath}:`, error);
       return null;
     }
   })();
 
-  return sessionLoadingPromise;
+  sessionLoadingPromises.set(modelPath, promise);
+  return promise;
 }

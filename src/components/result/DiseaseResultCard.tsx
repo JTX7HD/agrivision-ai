@@ -14,7 +14,9 @@ export const DiseaseResultCard: React.FC<DiseaseResultCardProps> = ({
   onScanAnother,
   onGoToDashboard
 }) => {
-  const { crop, disease, imageUrl, confidence, confidenceLevel, confidenceLabel, classProbabilities } = result;
+  const { crop, disease, imageUrl, confidence, confidenceLevel, confidenceLabel, classProbabilities, primaryLeaf } = result;
+  const yoloBox = primaryLeaf?.detection?.box;
+  const yoloConfidence = primaryLeaf?.detection?.confidence ? (primaryLeaf.detection.confidence * 100).toFixed(1) : null;
 
   const getConfidenceBadgeColor = (level: string) => {
     switch (level) {
@@ -32,34 +34,75 @@ export const DiseaseResultCard: React.FC<DiseaseResultCardProps> = ({
   return (
     <div className="max-w-4xl mx-auto space-y-6 py-2">
       
-      {/* 1. Analyzed Leaf Photo */}
+      {/* 1. Analyzed Leaf Photo with YOLO Bounding Box */}
       <div className="bg-slate-900 rounded-3xl border border-slate-800 p-6 shadow-xl space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
             <span>Image Analyzed</span>
           </h2>
-          <span className="text-xs font-mono text-emerald-400 bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800/60">
-            {crop.icon} {crop.name} Leaf
-          </span>
+          <div className="flex items-center gap-2">
+            {yoloConfidence && (
+              <span className="text-xs font-mono text-emerald-300 bg-emerald-950/80 px-2.5 py-1 rounded-full border border-emerald-800/60 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                YOLO: {yoloConfidence}%
+              </span>
+            )}
+            <span className="text-xs font-mono text-slate-300 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
+              {crop.icon} {crop.name}
+            </span>
+          </div>
         </div>
 
-        <div className="relative rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 max-h-[380px] flex items-center justify-center">
-          <img
-            src={imageUrl}
-            alt="Uploaded leaf photo analyzed by MobileNetV3 ONNX model"
-            className="max-h-[380px] w-full object-contain bg-slate-950"
-          />
+        <div className="relative rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 max-h-[380px] flex items-center justify-center p-2">
+          <div className="relative inline-block max-h-[360px] max-w-full">
+            <img
+              src={imageUrl}
+              alt="Uploaded leaf photo analyzed by YOLO and MobileNetV3"
+              className="max-h-[360px] max-w-full block rounded-lg object-contain"
+            />
+            {/* YOLO11n Bounding Box Overlay */}
+            {yoloBox && (
+              <div
+                className="absolute border-2 border-emerald-400 bg-emerald-500/15 pointer-events-none rounded shadow-[0_0_12px_rgba(16,185,129,0.4)] transition-all duration-300"
+                style={{
+                  left: `${Math.max(0, Math.min(100, yoloBox.x * 100))}%`,
+                  top: `${Math.max(0, Math.min(100, yoloBox.y * 100))}%`,
+                  width: `${Math.max(2, Math.min(100, yoloBox.width * 100))}%`,
+                  height: `${Math.max(2, Math.min(100, yoloBox.height * 100))}%`
+                }}
+              >
+                <div className="absolute -top-5 left-0 bg-emerald-500 text-slate-950 font-bold font-mono text-[10px] px-1.5 py-0.5 rounded shadow whitespace-nowrap">
+                  Leaf detected {yoloConfidence ? `(${yoloConfidence}%)` : ''}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* YOLO Detection Banner */}
+        {yoloConfidence && (
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
+            <div className="flex items-center gap-2 text-slate-300">
+              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <strong className="text-white">Leaf detected:</strong>
+              <span className="text-slate-400">YOLO11n isolated target leaf from original resolution photo</span>
+            </div>
+            <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-emerald-300 bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-800/50">
+              <span>YOLO confidence:</span>
+              <span className="text-emerald-400">{yoloConfidence}%</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 2. Model Prediction Banner */}
       <div className="bg-slate-900 rounded-3xl border border-slate-800 p-6 shadow-xl space-y-4">
         <div className="flex items-center justify-between border-b border-slate-800 pb-3">
           <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
-            Model Prediction
+            Disease Classification
           </span>
           <span className="text-[11px] font-mono text-slate-400">
-            MobileNetV3 ONNX Classifier
+            MobileNetV3 V2 Classifier
           </span>
         </div>
 

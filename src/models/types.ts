@@ -32,6 +32,69 @@ export interface ImageQualityStatus {
   contrast?: number;
 }
 
+export interface BoundingBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  coordinateType?: 'normalized' | 'pixel';
+}
+
+export interface LeafDetection {
+  id: string;
+  box: BoundingBox;
+  confidence: number;
+  label: string;
+  croppedImageUrl?: string;
+}
+
+export interface LeafSegmentation {
+  detectionId: string;
+  maskDataUrl?: string;
+  isolatedLeafImageUrl?: string;
+  polygon?: [number, number][];
+  areaRatio?: number;
+}
+
+export interface LimeFeatureAttribution {
+  featureIndex: number;
+  importance: number;
+  description?: string;
+  regionBox?: BoundingBox;
+}
+
+export interface LimeExplanation {
+  heatmapImageUrl?: string;
+  topFeatures?: LimeFeatureAttribution[];
+  positiveRegionsUrl?: string;
+  negativeRegionsUrl?: string;
+  rawWeights?: number[];
+  summary?: string;
+}
+
+export interface DetectedLeafAnalysis {
+  leafId: string;
+  detection: LeafDetection;
+  segmentation?: LeafSegmentation;
+  classIndex: number;
+  className: string;
+  confidence: number;
+  classProbabilities: ClassProbability[];
+  explanation?: LimeExplanation;
+}
+
+export interface ClassifierModelInfo {
+  modelName: string;
+  version: string;
+  checkpoint: string;
+  plantVillageAccuracy: number;
+  plantDocAccuracy: number;
+  description: string;
+  executionProvider: string;
+  inputShape: number[];
+  outputShape: number[];
+}
+
 export interface PipelineStageStatus {
   id: string;
   name: string;
@@ -65,6 +128,10 @@ export interface FullAnalysisResult {
   rawLogits: number[];
   imageQuality: ImageQualityStatus;
   isMockPrediction: false;
+  detectedLeaves?: DetectedLeafAnalysis[];
+  primaryLeaf?: DetectedLeafAnalysis;
+  explanation?: LimeExplanation;
+  classifierInfo?: ClassifierModelInfo;
   onnxInfo?: {
     modelPath: string;
     modelName: string;
@@ -98,3 +165,4 @@ export interface QuickSampleLeaf {
   imageUrl: string;
   description: string;
 }
+

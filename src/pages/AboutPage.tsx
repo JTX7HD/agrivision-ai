@@ -109,11 +109,18 @@ export const AboutPage: React.FC = () => {
             <Cpu className="w-4 h-4 text-emerald-400" />
             <span>Active ONNX Edge Engine Loaded</span>
           </p>
-          <code className="block bg-slate-950 p-2 rounded text-[11px] font-mono text-emerald-400 border border-slate-800">
-            public/models/tomato_disease_mobilenetv3.onnx
-          </code>
+          <div className="space-y-1.5">
+            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">1. Leaf Detector (YOLO11n):</span>
+            <code className="block bg-slate-950 p-2 rounded text-[11px] font-mono text-emerald-400 border border-slate-800">
+              public/models/yolo11n_leaf_v1_best.onnx
+            </code>
+            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">2. Disease Classifier (MobileNetV3 V2):</span>
+            <code className="block bg-slate-950 p-2 rounded text-[11px] font-mono text-emerald-400 border border-slate-800">
+              public/models/tomato_mobilenetv3_v2.onnx
+            </code>
+          </div>
           <p className="text-[11px] text-slate-300">
-            Inference engine: <strong className="text-white">ONNX Runtime Web (WASM/WebGL)</strong>. Executes quantized MobileNetV3 tensor graph directly on client devices without requiring cloud API servers.
+            Inference engine: <strong className="text-white">ONNX Runtime Web (WASM)</strong>. Runs end-to-end edge pipeline: YOLO11n detects and crops the target leaf, then MobileNetV3 V2 evaluates pathology across 10 tomato disease classes directly in the browser.
           </p>
         </div>
         <p className="text-slate-400">

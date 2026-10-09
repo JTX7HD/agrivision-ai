@@ -1,6 +1,6 @@
 import React from 'react';
 import type { PipelineStageStatus, Crop } from '../../models/types';
-import { Cpu, CheckCircle2, Loader2, ShieldCheck, Search } from 'lucide-react';
+import { Cpu, CheckCircle2, Loader2, ShieldCheck, Search, Scan, Layers, Eye } from 'lucide-react';
 
 interface PipelineVisualizerProps {
   crop: Crop;
@@ -17,8 +17,19 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
     switch (stageId) {
       case 'quality':
         return Search;
+      case 'detection':
+      case 'yolo':
+      case 'yolo11':
+        return Scan;
+      case 'segmentation':
+      case 'sam':
+        return Layers;
       case 'onnx':
+      case 'resnet50':
+      case 'mobilenetv3':
         return Cpu;
+      case 'lime':
+        return Eye;
       default:
         return Cpu;
     }
@@ -37,7 +48,7 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
           Evaluating {crop.name} Leaf...
         </h2>
         <p className="text-sm text-slate-400 max-w-lg mx-auto">
-          Running Image Quality Inspection $\rightarrow$ Client-Side WASM ONNX Model Inference.
+          Running Modular Pipeline: Quality Check $\rightarrow$ YOLO Detection $\rightarrow$ SAM Segmentation $\rightarrow$ MobileNetV3 V2 $\rightarrow$ LIME Explainability.
         </p>
       </div>
 

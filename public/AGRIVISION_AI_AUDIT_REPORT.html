@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriVision AI — Comprehensive Project Audit & Reality Check</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #10b981;
+      --accent-light: #34d399;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #38bdf8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      border-bottom: 2px solid var(--card-border);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent-light);
+      margin: 2.5rem 0 1rem 0;
+      border-left: 4px solid var(--accent);
+      padding-left: 0.75rem;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #fff;
+      margin: 1.5rem 0 0.75rem 0;
+    }
+
+    p { margin-bottom: 1rem; color: var(--text); }
+
+    .meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .badge-success { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-danger { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .badge-unknown { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.3); }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+
+    .alert {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      color: #fca5a5;
+    }
+
+    .alert strong { color: #fff; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.88rem;
+    }
+
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    th {
+      background: rgba(15, 23, 42, 0.6);
+      color: var(--accent-light);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.85em;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.25rem;
+      color: #38bdf8;
+    }
+
+    pre {
+      background: #090d16;
+      border: 1px solid var(--card-border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.8rem;
+      color: #e2e8f0;
+      margin: 1rem 0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #042f1a;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-light);
+    }
+
+    .btn-secondary {
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--card-border);
+    }
+
+    @media print {
+      body { background: #fff; color: #000; padding: 0; }
+      .card { background: #fff; border: 1px solid #ccc; box-shadow: none; }
+      th { background: #eee; color: #000; }
+      h1, h2, h3 { color: #000; }
+      .btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>AgriVision AI — Project Reality Audit</h1>
+        <div class="meta">
+          <span>Date: October 8, 2026</span> • 
+          <span>Target Architecture: IEEE Access 2025 Multi-Stage Tomato Pathology</span> • 
+          <span>Repo: <code>agrivision-ai</code></span>
+        </div>
+      </div>
+      <div>
+        <button onclick="window.print()" class="btn btn-primary">🖨️ Print / Save as PDF</button>
+      </div>
+    </header>
+
+    <div class="alert">
+      <strong>⚠️ Executive Reality Check:</strong> While the web platform, live camera scanner, and pipeline orchestrator are 100% operational, the trained PyTorch checkpoints (<code>best_tomato_mobilenetv3_v2.pth</code>) and YOLO weights do not exist in this repository because training was performed externally in Google Colab. The currently loaded 22 KB model in the browser is a synthetic 2-layer test network.
+    </div>
+
+    <h2>1. The 24 AI/ML Components: Reality Status</h2>
+    <div class="card" style="padding: 0; overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Component</th>
+            <th>Status</th>
+            <th>Evidence / File Path</th>
+            <th>Actual State</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><strong>Image Quality Checking</strong></td>
+            <td><span class="badge badge-success">🟢 FUNCTIONAL</span></td>
+            <td><code>src/services/onnx/imageQualityCheck.ts</code></td>
+            <td>Real Canvas pixel evaluation. Checks luminance and contrast standard deviation.</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><strong>Leaf Detection</strong></td>
+            <td><span class="badge badge-warning">🟡 SCAFFOLDED</span></td>
+            <td><code>src/services/pipeline/leafDetectionService.ts</code></td>
+            <td>Stub. Returns a fixed <code>[0, 0, 1, 1]</code> full-frame box.</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>YOLO</strong></td>
+            <td><span class="badge badge-danger">🔴 NOT IMPLEMENTED</span></td>
+            <td>N/A</td>
+            <td>No YOLO weights, code, or packages. UI label only.</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><strong>Leaf ROI Cropping</strong></td>
+            <td><span class="badge badge-success">🟢 FUNCTIONAL</span></td>
+            <td><code>src/services/pipeline/imageUtils.ts</code></td>
+            <td>Real Canvas 2D image slicing function. Crops bounding boxes accurately.</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><strong>SAM Segmentation</strong></td>
+            <td><span class="badge badge-danger">🔴 NOT IMPLEMENTED</span></td>
+            <td><code>src/services/pipeline/leafSegmentationService.ts</code></td>
+            <td>Stub. Passes image through without segmentation or background masking.</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td><strong>MobileNetV3 Classification</strong></td>
+            <td><span class="badge badge-warning">🟡 TOY / HEURISTIC</span></td>
+            <td><code>src/services/onnx/inferenceEngine.ts</code></td>
+            <td>Runs a synthetic 22KB 2-layer random CNN in WASM, or falls back to an RGB color rule.</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td><strong>V1 Model</strong></td>
+            <td><span class="badge badge-danger">🔴 NOT IMPLEMENTED</span></td>
+            <td>N/A</td>
+            <td>No file or checkpoint exists in repo.</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td><strong>V2 Model</strong></td>
+            <td><span class="badge badge-danger">🔴 MISSING FILE</span></td>
+            <td><code>src/services/pipeline/diseaseClassifierService.ts</code></td>
+            <td>Referenced by name (<code>best_tomato_mobilenetv3_v2.pth</code>), but file is missing.</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td><strong>V3 Model</strong></td>
+            <td><span class="badge badge-danger">🔴 NOT IMPLEMENTED</span></td>
+            <td>N/A</td>
+            <td>No file or checkpoint exists.</td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td><strong>PlantVillage Training</strong></td>
+            <td><span class="badge badge-unknown">⚪ UNKNOWN (COLAB)</span></td>
+            <td>N/A</td>
+            <td>Trained on Colab; zero artifacts or datasets exist in this repo.</td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td><strong>PlantDoc Training</strong></td>
+            <td><span class="badge badge-unknown">⚪ UNKNOWN (COLAB)</span></td>
+            <td>N/A</td>
+            <td>Trained on Colab; zero artifacts exist locally.</td>
+          </tr>
+          <tr>
+            <td>12</td>
+            <td><strong>PlantVillage Evaluation</strong></td>
+            <td><span class="badge badge-unknown">⚪ UNVERIFIED</span></td>
+            <td><code>src/services/pipeline/diseaseClassifierService.ts</code></td>
+            <td><code>99.56%</code> is hardcoded as text metadata. No evaluation logs exist.</td>
+          </tr>
+          <tr>
+            <td>13</td>
+            <td><strong>PlantDoc Evaluation</strong></td>
+            <td><span class="badge badge-unknown">⚪ UNVERIFIED</span></td>
+            <td><code>src/services/pipeline/diseaseClassifierService.ts</code></td>
+            <td><code>47.54%</code> is hardcoded as text metadata. No evaluation logs exist.</td>
+          </tr>
+          <tr>
+            <td>14</td>
+            <td><strong>Confidence Calculation</strong></td>
+            <td><span class="badge badge-success">🟢 FUNCTIONAL</span></td>
+            <td><code>src/services/onnx/softmax.ts</code></td>
+            <td>Numerically stable Softmax calculation with max-subtraction.</td>
+          </tr>
+          <tr>
+            <td>15</td>
+            <td><strong>Confidence Calibration</strong></td>
+            <td><span class="badge badge-success">🟢 FUNCTIONAL</span></td>
+            <td><code>src/services/onnx/resultFormatter.ts</code></td>
+            <td>Threshold tiers: High (&ge;80%), Moderate (60-79%), Low (&lt;60%).</td>
+          </tr>
+          <tr>
+            <td>16</td>
+            <td><strong>LIME Explainability</strong></td>
+            <td><span class="badge badge-warning">🟡 SCAFFOLDED</span></td>
+            <td><code>src/services/explainability/limeExplainer.ts</code></td>
+            <td>Stub. Returns static placeholder weights (<code>0.42</code>, <code>0.28</code>).</td>
+          </tr>
+          <tr>
+            <td>17</td>
+            <td><strong>Disease Knowledge Base</strong></td>
+            <td><span class="badge badge-success">🟢 FUNCTIONAL</span></td>
+            <td><code>src/data/diseasesData.ts</code></td>
+            <td>Full dictionary of 10 tomato disease pathologies, symptoms, and actions.</td>
+          </tr>
+          <tr>
+            <td>18</td>
+            <td><strong>Treatment Recommendations</strong></td>
+            <td><span class="badge badge-success">🟢 FUNCTIONAL</span></td>
+            <td><code>src/components/result/DiseaseResultCard.tsx</code></td>
+            <td>Renders real cultural, biological, and chemical prevention guidelines.</td>
+          </tr>
+          <tr>
+            <td>19</td>
+            <td><strong>Multi-Leaf Detection</strong></td>
+            <td><span class="badge badge-warning">🟡 SCAFFOLDED</span></td>
+            <td><code>src/models/types.ts</code></td>
+            <td>Data structures support array, but detection returns only 1 box.</td>
+          </tr>
+          <tr>
+            <td>20</td>
+            <td><strong>Multi-Leaf Classification</strong></td>
+            <td><span class="badge badge-warning">🟡 SCAFFOLDED</span></td>
+            <td><code>src/services/pipeline/pipelineOrchestrator.ts</code></td>
+            <td>Orchestrator supports array, but UI only renders primary leaf.</td>
+          </tr>
+          <tr>
+            <td>21</td>
+            <td><strong>ONNX Conversion</strong></td>
+            <td><span class="badge badge-danger">🔴 NOT IMPLEMENTED</span></td>
+            <td>N/A</td>
+            <td>No PyTorch-to-ONNX export scripts exist in the repository.</td>
+          </tr>
+          <tr>
+            <td>22</td>
+            <td><strong>Browser WASM Inference</strong></td>
+            <td><span class="badge badge-success">🟢 FUNCTIONAL</span></td>
+            <td><code>src/services/onnx/inferenceEngine.ts</code></td>
+            <td><code>onnxruntime-web</code> loads and executes model forward passes via WebAssembly.</td>
+          </tr>
+          <tr>
+            <td>23</td>
+            <td><strong>Camera Live Stream</strong></td>
+            <td><span class="badge badge-success">🟢 FUNCTIONAL</span></td>
+            <td><code>src/hooks/useCameraStream.ts</code></td>
+            <td>Real WebRTC live camera feed with switching and canvas capture.</td>
+          </tr>
+          <tr>
+            <td>24</td>
+            <td><strong>End-to-End Pipeline</strong></td>
+            <td><span class="badge badge-warning">🟡 COMPROMISED</span></td>
+            <td><code>src/services/pipeline/pipelineOrchestrator.ts</code></td>
+            <td>Web app executes end-to-end without crashing, but ML stages are stubs.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>2. Deep Forensic Audit of the Active ONNX Model</h2>
+    <div class="card">
+      <h3>File: <code>public/models/tomato_disease_mobilenetv3.onnx</code></h3>
+      <p>We executed a direct binary and protobuf graph inspection using Python's <code>onnx</code> library. Here are the exact specifications:</p>
+      <ul>
+        <li><strong>File Size:</strong> 22,363 bytes (~21.8 KB)</li>
+        <li><strong>Producer:</strong> <code>AgriVision-ONNX-Engine</code> (synthetically generated, not PyTorch)</li>
+        <li><strong>Input:</strong> <code>input_leaf_tensor</code> [1, 3, 224, 224] (Float32)</li>
+        <li><strong>Output:</strong> <code>disease_probabilities</code> [1, 10] (Float32)</li>
+        <li><strong>Total Parameters:</strong> <strong>5,406 parameters</strong> (A real MobileNetV3 has 2,500,000 to 5,400,000 parameters)</li>
+        <li><strong>Nodes (Exactly 7 Nodes):</strong> <code>Conv(16)</code> &rarr; <code>Relu</code> &rarr; <code>Conv(32)</code> &rarr; <code>Relu</code> &rarr; <code>GlobalAveragePool</code> &rarr; <code>Flatten</code> &rarr; <code>Gemm(10)</code></li>
+        <li><strong>Weights:</strong> Uniform random numbers (mean ~0.002, std ~0.10). <em>Not trained.</em></li>
+      </ul>
+      <pre>
+// What the inference engine actually does in src/services/onnx/inferenceEngine.ts:
+1. Loads 22KB toy model into onnxruntime-web WASM
+2. Feeds image tensor -> outputs ~0.10 for all 10 classes
+3. If session fails -> falls back to hardcoded pixel-color heuristic:
+   darkNecrosis = 100 - (R + G + B)/3
+   yellowChlorosis = (R + G)/2 - B - 25
+   greenVigor = G - max(R, B)
+      </pre>
+    </div>
+
+    <h2>3. Documentation vs Reality Discrepancies</h2>
+    <div class="card" style="padding: 0; overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>What UI & Documentation Claim</th>
+            <th>What the Code Actually Does</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Classifier</strong></td>
+            <td>MobileNetV3 V2 (best_tomato_mobilenetv3_v2.pth), 99.56% PV accuracy</td>
+            <td>22KB 2-layer toy network with 5,406 random weights + color heuristic fallback.</td>
+          </tr>
+          <tr>
+            <td><strong>YOLO</strong></td>
+            <td>Stage 2: YOLO Leaf Detection & ROI Extraction</td>
+            <td>Returns a static bounding box [0, 0, 1, 1] covering 100% of the image.</td>
+          </tr>
+          <tr>
+            <td><strong>SAM</strong></td>
+            <td>Stage 3: SAM Leaf Segmentation & Background Isolation</td>
+            <td>Passes image through without touching pixels.</td>
+          </tr>
+          <tr>
+            <td><strong>LIME</strong></td>
+            <td>Stage 5: LIME Visual Explainability & Superpixel Heatmaps</td>
+            <td>Returns static hardcoded numbers (0.42, 0.28). No heatmaps generated.</td>
+          </tr>
+          <tr>
+            <td><strong>Crops</strong></td>
+            <td>6 supported crops (Tomato, Potato, Maize, Rice, Banana, Chilli)</td>
+            <td>Only 10 Tomato classes are modeled. Scanning Potato or Maize still runs tomato classifier.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>4. Concrete Next Steps to Complete the Project</h2>
+    <div class="card">
+      <ol style="padding-left: 1.5rem; line-height: 2;">
+        <li><strong>Retrieve & Export <code>best_tomato_mobilenetv3_v2.pth</code>:</strong>
+          <br><span class="meta">Locate the PyTorch checkpoint on Google Drive or Colab. Run <code>torch.onnx.export</code> with embedded weights (~10 MB). Replace <code>public/models/tomato_disease_mobilenetv3.onnx</code>. The web app instantly gains genuine 99.56% AI accuracy with zero code changes!</span>
+        </li>
+        <li><strong>Retrieve or Re-train YOLO11n Leaf Detector:</strong>
+          <br><span class="meta">Locate the single-class PlantDoc leaf detection weights (<code>best.pt</code>). Export to ONNX and connect to <code>src/services/pipeline/leafDetectionService.ts</code>.</span>
+        </li>
+        <li><strong>Commit Colab Notebooks to this Repo:</strong>
+          <br><span class="meta">Create a <code>training/</code> folder and commit your Python/Colab notebooks and evaluation scripts so training history is permanently preserved.</span>
+        </li>
+      </ol>
+    </div>
+  </div>
+</body>
+</html>

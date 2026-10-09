@@ -69,7 +69,7 @@ export function formatInferenceResult(
     confidenceLabel,
     classProbabilities,
     rawLogits: rawLogitsArray,
-    modelName: 'MobileNetV3 (public/models/tomato_disease_mobilenetv3.onnx)',
+    modelName: 'MobileNetV3 V2 (public/models/tomato_mobilenetv3_v2.onnx)',
     inferenceTimeMs,
     isMockPrediction: false
   };

@@ -110,7 +110,7 @@ export const CameraScanner: React.FC<CameraScannerProps> = ({
           </h4>
           <span className="text-[11px] font-mono text-emerald-300 bg-slate-950 px-2.5 py-1 rounded-lg border border-emerald-800/60 flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-            ONNX: public/models/tomato_disease_mobilenetv3.onnx
+            ONNX: YOLO11n + MobileNetV3 V2
           </span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-slate-300">

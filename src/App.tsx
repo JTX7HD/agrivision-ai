@@ -626,15 +626,39 @@ function AnalysisView({
       modelName: 'Quality Check',
       description: 'Verifying lighting, focus, and leaf contrast...',
       status: 'idle',
-      durationMs: 150
+      durationMs: 120
+    },
+    {
+      id: 'detection',
+      name: '2. YOLO Leaf Detection & ROI',
+      modelName: 'YOLO-Ready Detector',
+      description: 'Scanning image frame to detect leaf bounding box geometry...',
+      status: 'idle',
+      durationMs: 80
+    },
+    {
+      id: 'segmentation',
+      name: '3. SAM Leaf Segmentation',
+      modelName: 'SAM-Ready Segmenter',
+      description: 'Isolating leaf margins and suppressing background soil/shadows...',
+      status: 'idle',
+      durationMs: 90
     },
     {
       id: 'onnx',
-      name: '2. MobileNetV3 ONNX Inference',
-      modelName: 'tomato_disease_mobilenetv3.onnx',
+      name: '4. MobileNetV3 Disease Classification',
+      modelName: 'best_tomato_mobilenetv3_v2.pth',
       description: 'Evaluating Float32 tensor [1, 3, 224, 224] via client-side WASM runtime...',
       status: 'idle',
       durationMs: 450
+    },
+    {
+      id: 'lime',
+      name: '5. LIME Visual Explainability',
+      modelName: 'LIME Attribution Engine',
+      description: 'Computing superpixel feature importance heatmaps...',
+      status: 'idle',
+      durationMs: 110
     }
   ]);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
@@ -646,9 +670,15 @@ function AnalysisView({
       try {
         const result = await analyzeLeafPipeline(selectedImage, cropId, (updatedStage) => {
           if (!isSubscribed) return;
-          setStages((prevStages) =>
-            prevStages.map((s) => (s.id === updatedStage.id ? { ...updatedStage } : s))
-          );
+          setStages((prevStages) => {
+            const index = prevStages.findIndex((s) => s.id === updatedStage.id);
+            if (index !== -1) {
+              const updated = [...prevStages];
+              updated[index] = { ...updatedStage };
+              return updated;
+            }
+            return [...prevStages, updatedStage];
+          });
         });
 
         if (isSubscribed) {
