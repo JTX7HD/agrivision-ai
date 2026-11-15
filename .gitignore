@@ -11,6 +11,19 @@ node_modules
 dist
 dist-ssr
 *.local
+.data
+.env
+training_artifacts/
+downloaded_corrections/
+scratch/
+*.bak
+*.pt
+__pycache__/
+*.py[cod]
+data/field_training_audit/smoke_test/
+data/field_training_audit/plantdoc_train_raw/
+data/field_training_audit/plantvillage_anchor_raw/
+data/corrections/images/
 
 # Editor directories and files
 .vscode/*

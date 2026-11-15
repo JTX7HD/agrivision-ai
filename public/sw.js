@@ -30,7 +30,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
   // Bypass service worker for large ONNX model binaries — let standard HTTP caching handle them
-  if (url.pathname.endsWith('.onnx') || url.pathname.endsWith('.wasm')) {
+  if (url.pathname.includes('/models/') || url.pathname.endsWith('.onnx') || url.pathname.endsWith('.wasm')) {
     return;
   }
 

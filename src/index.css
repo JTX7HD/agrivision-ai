@@ -4,7 +4,18 @@
   body {
     @apply bg-slate-950 text-slate-100 antialiased selection:bg-emerald-500 selection:text-slate-950 font-sans min-h-screen;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-family: 'Manrope', 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans Devanagari', 'Noto Sans Bengali', 'Noto Sans Gurmukhi', 'Noto Sans Gujarati', 'Noto Sans Oriya', 'Noto Sans Tamil', 'Noto Sans Telugu', 'Noto Sans Kannada', 'Noto Sans Malayalam', 'Noto Nastaliq Urdu', 'Noto Sans Arabic', 'Noto Sans Ol Chiki', 'Noto Sans Meetei Mayek', sans-serif;
   }
+}
+
+/* RTL Support for Urdu, Kashmiri, Sindhi */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] .font-mono {
+  direction: ltr;
+  display: inline-block;
 }
 
 /* Custom smooth animations & focus outlines */

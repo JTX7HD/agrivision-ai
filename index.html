@@ -24,7 +24,7 @@
       if ('caches' in window) {
         caches.keys().then((names) => {
           for (const name of names) {
-            if (name.includes('agrivision-v1')) {
+            if (name.includes('agrivision-v1') || name.includes('agrivision-v2')) {
               caches.delete(name);
             }
           }

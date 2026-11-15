@@ -102,29 +102,64 @@ export const AboutPage: React.FC = () => {
         </p>
       </div>
 
-      <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 text-xs text-slate-400 space-y-3">
-        <h4 className="font-bold text-white text-sm">Project Architecture & ONNX Edge Model</h4>
-        <div className="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-800/50 space-y-2">
+      <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 text-xs text-slate-400 space-y-4">
+        <h4 className="font-bold text-white text-sm">Project Architecture & ONNX Edge Models</h4>
+        <div className="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-800/50 space-y-3">
           <p className="font-semibold text-emerald-300 flex items-center gap-2">
             <Cpu className="w-4 h-4 text-emerald-400" />
-            <span>Active ONNX Edge Engine Loaded</span>
+            <span>Active ONNX Edge Engine & Multi-Crop Checkpoints</span>
           </p>
-          <div className="space-y-1.5">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">1. Leaf Detector (YOLO11n):</span>
-            <code className="block bg-slate-950 p-2 rounded text-[11px] font-mono text-emerald-400 border border-slate-800">
-              public/models/yolo11n_leaf_v1_best.onnx
-            </code>
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">2. Disease Classifier (MobileNetV3 V2):</span>
-            <code className="block bg-slate-950 p-2 rounded text-[11px] font-mono text-emerald-400 border border-slate-800">
-              public/models/tomato_mobilenetv3_v2.onnx
-            </code>
+          <div className="space-y-2">
+            <div>
+              <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">1. Leaf Detector (YOLO11n):</span>
+              <code className="block bg-slate-950 p-2 rounded text-[11px] font-mono text-emerald-400 border border-slate-800">
+                public/models/yolo11n_leaf_v1_best.onnx
+              </code>
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">2. Tomato Classifier (MobileNetV3 V2 — 10 Classes):</span>
+              <code className="block bg-slate-950 p-2 rounded text-[11px] font-mono text-emerald-400 border border-slate-800">
+                public/models/tomato_mobilenetv3_v2.onnx
+              </code>
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">3. Potato Pathology Classifier (YOLO26s-cls — 3 Classes, Apache 2.0):</span>
+              <code className="block bg-slate-950 p-2 rounded text-[11px] font-mono text-emerald-400 border border-slate-800">
+                public/models/potato_disease.onnx
+              </code>
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">4. Chilli Pathology Classifier (YOLO26n-cls — 8 Classes, Apache 2.0):</span>
+              <code className="block bg-slate-950 p-2 rounded text-[11px] font-mono text-emerald-400 border border-slate-800">
+                public/models/chilli_disease.onnx
+              </code>
+            </div>
+            <div>
+              <span className="text-[10px] text-amber-400 uppercase tracking-wider font-semibold flex items-center justify-between">
+                <span>5. Other Crops (Maize, Rice, Banana):</span>
+                <span className="bg-amber-950/60 text-amber-300 border border-amber-800/60 px-1.5 py-0.5 rounded text-[9px] font-bold">COMING SOON</span>
+              </span>
+              <div className="bg-slate-950/60 p-2 rounded text-[11px] text-slate-400 border border-slate-800/80 mt-1">
+                Deep neural network models for Maize (Corn), Rice, and Banana are currently undergoing domain adaptation training.
+              </div>
+            </div>
           </div>
           <p className="text-[11px] text-slate-300">
-            Inference engine: <strong className="text-white">ONNX Runtime Web (WASM)</strong>. Runs end-to-end edge pipeline: YOLO11n detects and crops the target leaf, then MobileNetV3 V2 evaluates pathology across 10 tomato disease classes directly in the browser.
+            Inference engine: <strong className="text-white">ONNX Runtime Web (WASM)</strong>. Runs end-to-end edge pipeline: YOLO11n detects and crops the target leaf ROI, then crop-specific neural classifiers (MobileNetV3 V2 for Tomato, YOLO26s for Potato, and YOLO26n for Chilli) evaluate pathology directly inside the browser at zero recurring data cost.
           </p>
         </div>
+
+        <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+          <p className="font-semibold text-slate-300 text-xs">
+            Third-Party Model Attribution & Apache 2.0 Compliance
+          </p>
+          <p className="text-[11px] text-slate-400 leading-relaxed">
+            Potato and Chilli models are derived from <strong className="text-white">KrishokTech-Models</strong> (Reza, Khaan et al., <em>KrishokChat: A Grounded Multi-Modal Agricultural Advisory and Pathology Diagnostic System for Smallholder Farming</em>, EACL 2026), distributed under the <strong className="text-emerald-400">Apache License 2.0</strong>. See <code className="text-emerald-400">LICENSE_KRISHOKTECH.md</code> for full terms and attribution details.
+          </p>
+        </div>
+
         <p className="text-slate-400">
-          ✓ <strong className="text-emerald-400">Milestone 1:</strong> PWA foundation, mobile camera scanner, ONNX edge model loader, pipeline service abstraction, LIME heatmap overlays, and offline sync.
+          ✓ <strong className="text-emerald-400">Multi-Crop Support:</strong> PWA foundation, mobile camera scanner, multi-crop ONNX edge loaders, pipeline service abstraction, LIME heatmap overlays, and offline sync.
         </p>
       </div>
 

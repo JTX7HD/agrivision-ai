@@ -1,6 +1,7 @@
 import React from 'react';
 import type { PipelineStageStatus, Crop } from '../../models/types';
 import { Cpu, CheckCircle2, Loader2, ShieldCheck, Search, Scan, Layers, Eye } from 'lucide-react';
+import { useTranslation } from '../../i18n/i18nContext';
 
 interface PipelineVisualizerProps {
   crop: Crop;
@@ -13,6 +14,8 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
   imageUrl,
   stages
 }) => {
+  const { t } = useTranslation();
+
   const getStageIcon = (stageId: string) => {
     switch (stageId) {
       case 'quality':
@@ -35,6 +38,40 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
     }
   };
 
+  const getLocalizedStageName = (stage: PipelineStageStatus) => {
+    switch (stage.id) {
+      case 'quality':
+        return t.pipeline.stage1Name;
+      case 'detection':
+        return t.pipeline.stage2Name;
+      case 'segmentation':
+        return t.pipeline.stage3Name;
+      case 'onnx':
+        return t.pipeline.stage4Name;
+      case 'lime':
+        return t.pipeline.stage5Name;
+      default:
+        return stage.name;
+    }
+  };
+
+  const getLocalizedStageDesc = (stage: PipelineStageStatus) => {
+    switch (stage.id) {
+      case 'quality':
+        return t.pipeline.stage1Desc;
+      case 'detection':
+        return t.pipeline.stage2Desc;
+      case 'segmentation':
+        return t.pipeline.stage3Desc;
+      case 'onnx':
+        return t.pipeline.stage4Desc;
+      case 'lime':
+        return t.pipeline.stage5Desc;
+      default:
+        return stage.description;
+    }
+  };
+
   return (
     <div className="max-w-3xl mx-auto space-y-8 py-4">
       
@@ -45,10 +82,10 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
           <span>MobileNetV3 ONNX Edge Inference Engine</span>
         </div>
         <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-          Evaluating {crop.name} Leaf...
+          {t.pipeline.evaluating.replace('...', ` (${crop.name})...`)}
         </h2>
         <p className="text-sm text-slate-400 max-w-lg mx-auto">
-          Running Modular Pipeline: Quality Check $\rightarrow$ YOLO Detection $\rightarrow$ SAM Segmentation $\rightarrow$ MobileNetV3 V2 $\rightarrow$ LIME Explainability.
+          {t.pipeline.runningStages}
         </p>
       </div>
 
@@ -99,10 +136,10 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
                       isRunning
                         ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30'
                         : isCompleted
-                        ? 'bg-emerald-900/60 text-emerald-400 border border-emerald-700/50'
+                        ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/60'
                         : isFailed
-                        ? 'bg-red-900/60 text-red-300 border border-red-700/50'
-                        : 'bg-slate-800 text-slate-500'
+                        ? 'bg-red-950 text-red-400 border border-red-800/60'
+                        : 'bg-slate-900 text-slate-600'
                     }`}
                   >
                     {isRunning ? (
@@ -114,29 +151,36 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
                     )}
                   </div>
 
-                  <div className="min-w-0 flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <h4 className="font-bold text-sm text-white flex items-center gap-2">
-                        <span>{stage.name}</span>
-                      </h4>
-                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-800 text-emerald-400 border border-slate-700">
-                        {stage.modelName}
-                      </span>
+                      <h3
+                        className={`text-sm font-bold truncate ${
+                          isRunning
+                            ? 'text-emerald-400'
+                            : isCompleted
+                            ? 'text-white'
+                            : isFailed
+                            ? 'text-red-400'
+                            : 'text-slate-500'
+                        }`}
+                      >
+                        {getLocalizedStageName(stage)}
+                      </h3>
+                      {stage.durationMs > 0 && isCompleted && (
+                        <span className="text-[10px] font-mono text-emerald-400/80 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-900/50 shrink-0">
+                          {stage.durationMs}ms
+                        </span>
+                      )}
                     </div>
 
-                    <p className="text-xs text-slate-400 mt-1">
-                      {stage.description}
+                    <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">
+                      {stage.outputSummary || getLocalizedStageDesc(stage)}
                     </p>
 
-                    {isCompleted && stage.outputSummary && (
-                      <div className="mt-2 text-[11px] font-mono text-emerald-300 bg-emerald-950/40 p-2 rounded-lg border border-emerald-800/40">
-                        ✓ {stage.outputSummary}
-                      </div>
-                    )}
-
-                    {isFailed && stage.outputSummary && (
-                      <div className="mt-2 text-[11px] font-mono text-red-300 bg-red-950/60 p-2 rounded-lg border border-red-800/40">
-                        ✕ {stage.outputSummary}
+                    {isCompleted && (
+                      <div className="mt-2 flex items-center gap-1.5 text-[11px] font-mono text-emerald-300 bg-slate-950/70 px-2.5 py-1 rounded-lg border border-slate-800/80">
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span className="truncate">{stage.modelName}</span>
                       </div>
                     )}
                   </div>
@@ -146,11 +190,6 @@ export const PipelineVisualizer: React.FC<PipelineVisualizerProps> = ({
           })}
         </div>
 
-      </div>
-
-      <div className="text-center text-xs text-slate-500 flex items-center justify-center gap-2">
-        <ShieldCheck className="w-4 h-4 text-emerald-500" />
-        <span>Processing image strictly locally via client-side ONNX Runtime WASM</span>
       </div>
 
     </div>

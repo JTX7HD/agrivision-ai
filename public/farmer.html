@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgriVision AI</title>
+<style>
+:root{--g:#2f7d32;--gd:#1f5a23;--gl:#e8f3e8;--bg:#f7faf6;--tx:#1b2a1c;--mu:#5b6b5c;--bd:#d6e2d5;--wn:#b45309;--er:#b42318;--wh:#fff}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);font-size:18px;line-height:1.5}
+header{background:var(--wh);border-bottom:1px solid var(--bd);padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:800;font-size:1.25rem;color:var(--gd)}
+.brand span{color:var(--g)}
+main{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+.steps{display:flex;gap:8px;margin-bottom:22px}
+.step{flex:1;text-align:center;font-size:.85rem;font-weight:600;color:var(--mu);padding-bottom:8px;border-bottom:4px solid var(--bd)}
+.step.on{color:var(--gd);border-color:var(--g)}
+.step.done{color:var(--g);border-color:var(--g)}
+h1{font-size:1.6rem;margin:0 0 6px}
+p.sub{color:var(--mu);margin:0 0 20px}
+.crops{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.crop{background:var(--wh);border:2px solid var(--bd);border-radius:16px;min-height:120px;font-size:1.15rem;font-weight:700;color:var(--tx);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px;transition:border-color .15s}
+.crop .dot{width:40px;height:40px;border-radius:50%;background:var(--gl);color:var(--g);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800}
+.crop:not(.coming-soon):hover,.crop:not(.coming-soon):focus-visible{border-color:var(--g);outline:none}
+
+/* Coming Soon Crops */
+.crop.coming-soon{opacity:.55;cursor:not-allowed;border-style:dashed;border-color:var(--bd);background:#fafcfa}
+.crop.coming-soon:hover,.crop.coming-soon:focus-visible{border-color:var(--bd);outline:none}
+.crop.coming-soon .dot{background:#edf2ed;color:var(--mu)}
+.soon-badge{font-size:.7rem;font-weight:800;color:var(--wn);background:#fef3c7;border:1px solid #fde68a;border-radius:999px;padding:2px 8px;margin-top:2px;letter-spacing:.3px;text-transform:uppercase}
+
+.card{background:var(--wh);border:1px solid var(--bd);border-radius:16px;padding:18px;margin-bottom:16px}
+.tips{margin:0;padding-left:20px;color:var(--tx)}
+.tips li{margin:4px 0}
+.btn{display:block;width:100%;min-height:56px;border-radius:14px;border:2px solid var(--g);background:var(--wh);color:var(--gd);font-size:1.1rem;font-weight:700;cursor:pointer;padding:12px 16px;margin-top:12px;text-align:center}
+.btn.primary{background:var(--g);color:#fff}
+.btn.primary:hover{background:var(--gd)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:focus-visible{outline:3px solid #9ccc9e;outline-offset:2px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.link{background:none;border:none;color:var(--gd);font-size:1rem;font-weight:600;cursor:pointer;padding:8px 0;text-decoration:underline}
+.preview{width:100%;max-height:360px;object-fit:contain;background:#eef3ed;border-radius:12px;display:block}
+.msg{border-radius:12px;padding:12px 14px;margin:12px 0;font-size:1rem}
+.msg.err{background:#fdecea;color:var(--er);border:1px solid #f4c7c3}
+.msg.warn{background:#fff4e5;color:var(--wn);border:1px solid #f5d9ae}
+.badge{display:inline-block;background:var(--gl);color:var(--gd);border-radius:999px;padding:2px 12px;font-size:.9rem;font-weight:700}
+.disease{font-size:1.8rem;font-weight:800;margin:8px 0 4px}
+.bar{height:12px;background:#e5ece4;border-radius:8px;overflow:hidden;margin-top:6px}
+.bar>i{display:block;height:100%;background:var(--g)}
+.note{font-size:.88rem;color:var(--mu)}
+h2{font-size:1.1rem;margin:0 0 8px}
+.spin{width:44px;height:44px;border:5px solid var(--gl);border-top-color:var(--g);border-radius:50%;margin:20px auto;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+.hide{display:none!important}
+@media(max-width:520px){.crops{grid-template-columns:repeat(2,1fr);gap:10px}}
+@media(max-width:380px){.crops{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Agri<span>Vision</span> AI</div>
+  <button class="link hide" id="homeBtn">Start over</button>
+</header>
+
+<main>
+  <div class="steps" aria-label="Progress">
+    <div class="step on" id="st1">1. Choose crop</div>
+    <div class="step" id="st2">2. Leaf photo</div>
+    <div class="step" id="st3">3. Result</div>
+  </div>
+
+  <!-- STEP 1 -->
+  <section id="s1">
+    <h1>Which crop is it?</h1>
+    <p class="sub">Tap your crop to begin.</p>
+    <div class="crops">
+      <!-- 3 Supported Crops -->
+      <button class="crop" data-crop="Tomato" type="button"><span class="dot">🍅</span>Tomato</button>
+      <button class="crop" data-crop="Potato" type="button"><span class="dot">🥔</span>Potato</button>
+      <button class="crop" data-crop="Chilli" type="button"><span class="dot">🌶️</span>Chilli</button>
+
+      <!-- Unsupported Crops (Coming soon) -->
+      <button class="crop coming-soon" data-crop="Maize" disabled type="button">
+        <span class="dot">🌽</span>
+        <span>Maize</span>
+        <span class="soon-badge">Coming soon</span>
+      </button>
+
+      <button class="crop coming-soon" data-crop="Rice" disabled type="button">
+        <span class="dot">🌾</span>
+        <span>Rice</span>
+        <span class="soon-badge">Coming soon</span>
+      </button>
+
+      <button class="crop coming-soon" data-crop="Banana" disabled type="button">
+        <span class="dot">🍌</span>
+        <span>Banana</span>
+        <span class="soon-badge">Coming soon</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section id="s2" class="hide">
+    <h1><span id="cropName"></span> leaf photo</h1>
+    <div class="card" id="tipsCard">
+      <h2>How to take a good photo</h2>
+      <ul class="tips">
+        <li>Pick one leaf that shows the problem.</li>
+        <li>Hold it flat in daylight, without shadows.</li>
+        <li>Fill the photo with the leaf. Keep it sharp, not blurry.</li>
+      </ul>
+    </div>
+
+    <div id="pickBox">
+      <button class="btn primary" id="camBtn">Take a Photo</button>
+      <button class="btn" id="upBtn">Upload a Photo</button>
+    </div>
+
+    <div id="prevBox" class="hide">
+      <div class="card">
+        <img id="prev" class="preview" alt="Selected leaf photo">
+        <div class="note" id="fileInfo" style="margin-top:8px"></div>
+      </div>
+      <button class="btn primary" id="analyzeBtn">Analyze Leaf</button>
+      <div class="row">
+        <button class="btn" id="retakeBtn">Retake Photo</button>
+        <button class="btn" id="replaceBtn">Choose Another</button>
+      </div>
+    </div>
+
+    <div id="loading" class="hide" role="status" aria-live="polite">
+      <div class="spin"></div>
+      <p style="text-align:center;margin:0">Checking your leaf…</p>
+    </div>
+
+    <div id="err" class="msg err hide" role="alert"></div>
+    <button class="link" id="backCrop">← Change crop</button>
+
+    <input type="file" id="camIn" accept="image/*" capture="environment" hidden>
+    <input type="file" id="upIn" accept="image/jpeg,image/png,image/webp" hidden>
+  </section>
+
+  <!-- STEP 3 -->
+  <section id="s3" class="hide">
+    <div class="card">
+      <img id="resImg" class="preview" alt="Analyzed leaf photo">
+    </div>
+    <div class="card">
+      <span class="badge" id="resCrop"></span>
+      <div class="disease" id="resName"></div>
+      <div id="uncertain" class="msg warn hide"></div>
+      <div id="confWrap">
+        <div class="note">Model confidence: <b id="confTxt"></b></div>
+        <div class="bar"><i id="confBar"></i></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2 id="adviceTitle">What you can do</h2>
+      <ul class="tips" id="advice"></ul>
+      <p class="note" style="margin-bottom:0">This is a quick guide from a photo, not a confirmed diagnosis. If the problem spreads, ask a local agriculture officer.</p>
+    </div>
+    <button class="btn primary" id="againBtn">Analyze Another Leaf</button>
+    <button class="btn" id="otherCropBtn">Choose Another Crop</button>
+    <p class="note">AgriVision AI · Multi-crop mobile inference platform</p>
+  </section>
+</main>
+
+<script>
+/* ================= CONFIG ================= */
+const API_URL = "/predict";
+const FILE_FIELD = "file";
+const CROP_FIELD = "crop";
+const MAX_MB = 10;
+const ALLOWED = ["image/jpeg","image/png","image/webp"];
+const UNCERTAIN_BELOW = 60;
+
+function mapResponse(r){
+  return {
+    label: r.label ?? r.class ?? r.prediction ?? r.disease ?? "",
+    confidence: r.confidence ?? r.probability ?? r.score ?? null,
+    uncertain: !!r.uncertain
+  };
+}
+
+/* ================= DISEASE KNOWLEDGE BASE ================= */
+const HEALTHY = {name:"Healthy leaf",tips:[
+  "No clear disease signs seen in this photo.",
+  "Keep checking leaves weekly, including the undersides.",
+  "Water at the base of the plant and avoid wetting leaves.",
+  "Remove weeds and old plant debris to keep the field clean."]};
+
+const DISEASES = [
+ {k:["healthy"],...HEALTHY},
+ {k:["early_blight","early blight"],name:"Early Blight",tips:[
+  "Remove and destroy badly spotted lower leaves.",
+  "Avoid watering from above; water early in the day.",
+  "Rotate crops and do not plant this crop in the same spot next season.",
+  "If it keeps spreading, ask your agriculture officer about a suitable fungicide."]},
+ {k:["late_blight","late blight"],name:"Late Blight",tips:[
+  "Act quickly: this disease can spread fast in cool, wet weather.",
+  "Remove and bury or burn affected plants; do not compost them.",
+  "Improve spacing and airflow between plants.",
+  "Contact your local agriculture officer for a recommended spray."]},
+ {k:["bacterial_spot","bacterial spot"],name:"Bacterial Spot",tips:[
+  "Avoid working in the field when leaves are wet.",
+  "Remove badly affected leaves and keep tools clean.",
+  "Use clean seed or seedlings and rotate crops.",
+  "Ask your agriculture officer about copper-based options."]},
+ {k:["leaf_mold","leaf mold"],name:"Leaf Mold",tips:[
+  "Improve airflow: prune and space plants.",
+  "Reduce humidity and avoid wetting leaves.",
+  "Remove affected leaves and clear plant debris.",
+  "Ask your agriculture officer if a fungicide is needed."]},
+ {k:["septoria"],name:"Septoria Leaf Spot",tips:[
+  "Remove spotted lower leaves early.",
+  "Water at the soil level and mulch to stop soil splash.",
+  "Rotate crops and clear old plant debris.",
+  "Ask your agriculture officer about control options."]},
+ {k:["spider_mite","spider mite","two-spotted"],name:"Spider Mites",tips:[
+  "Check the underside of leaves for tiny mites or webbing.",
+  "Wash plants with a strong water spray; keep plants from drying out.",
+  "Avoid dusty conditions around plants.",
+  "Ask your agriculture officer about safe control options."]},
+ {k:["target_spot","target spot"],name:"Target Spot",tips:[
+  "Remove affected leaves and reduce leaf wetness.",
+  "Space plants for good airflow.",
+  "Clear old plant debris after harvest.",
+  "Ask your agriculture officer about control options."]},
+ {k:["yellow_leaf_curl","yellowleaf","yellow leaf curl","leaf curl","leafcurl","curl"],name:"Leaf Curl / Yellow Leaf Curl",tips:[
+  "This is often spread by whiteflies; check leaf undersides.",
+  "Remove and destroy badly affected plants.",
+  "Use yellow sticky traps and keep weeds down.",
+  "Ask your agriculture officer about whitefly control."]},
+ {k:["mosaic"],name:"Mosaic Virus",tips:[
+  "Remove and destroy infected plants; there is no cure for virus.",
+  "Wash hands and tools after touching affected plants.",
+  "Control weeds and insects that may carry the virus.",
+  "Use healthy seed or seedlings next season."]},
+ {k:["powdery_mildew","mildew"],name:"Powdery Mildew",tips:[
+  "Prune crowded stems to improve sunlight and air circulation.",
+  "Apply neem oil, potassium bicarbonate, or sulfur-based spray early.",
+  "Avoid excessive nitrogen fertilizer which causes dense, susceptible leaves."]},
+ {k:["white_spot","anthracnose"],name:"Anthracnose / White Spot",tips:[
+  "Remove and destroy spotted leaves and infected fruit immediately.",
+  "Avoid overhead watering; mulch soil to stop spores from splashing.",
+  "Ask your local agriculture officer about copper fungicides."]},
+ {k:["cercospora"],name:"Cercospora Leaf Spot",tips:[
+  "Remove spotted leaves and space plants for better airflow.",
+  "Avoid overhead watering and clear plant residue after harvest.",
+  "Ask your agriculture officer about control sprays if it spreads."]},
+ {k:["nutrition_deficiency","deficiency"],name:"Nutrient Deficiency",tips:[
+  "Yellowing or pale leaves indicate a macro or micronutrient imbalance.",
+  "Test soil pH and apply balanced compost or liquid fertilizer.",
+  "Spray a balanced micronutrient foliar feed for rapid leaf recovery."]},
+ {k:["others"],name:"Non-Crop Foliage",tips:[
+  "The model detected foliage that does not match this crop.",
+  "Please photograph a single leaf of the selected crop in good daylight."]}
+];
+
+function describe(raw){
+  const l = String(raw).toLowerCase().replace(/_{1,3}/g,"_");
+  for(const d of DISEASES){ if(d.k.some(k=>l.includes(k))) return d; }
+  const pretty = String(raw).replace(/^[A-Za-z]+___?/,"").replace(/_/g," ").trim();
+  return {name: pretty ? pretty.charAt(0).toUpperCase()+pretty.slice(1) : "Unknown",
+          tips:["Take another clear photo of the same leaf.","Ask your local agriculture officer to check the plant."]};
+}
+
+/* ================= UI LOGIC ================= */
+const $ = id => document.getElementById(id);
+let crop = null, file = null, previewURL = null;
+
+function show(step){
+  ["s1","s2","s3"].forEach((s,i)=>$(s).classList.toggle("hide", i+1!==step));
+  [1,2,3].forEach(n=>{
+    const e=$("st"+n);
+    e.className="step"+(n===step?" on":n<step?" done":"");
+  });
+  $("homeBtn").classList.toggle("hide", step===1);
+  window.scrollTo({top:0});
+}
+function showErr(t){ $("err").textContent=t; $("err").classList.remove("hide"); }
+function clearErr(){ $("err").classList.add("hide"); }
+function resetPhoto(){
+  file=null; if(previewURL){URL.revokeObjectURL(previewURL);previewURL=null;}
+  $("camIn").value=""; $("upIn").value="";
+  $("prevBox").classList.add("hide"); $("pickBox").classList.remove("hide");
+  $("tipsCard").classList.remove("hide"); $("loading").classList.add("hide");
+  clearErr();
+}
+function chooseCrop(c){ crop=c; $("cropName").textContent=c; resetPhoto(); show(2); }
+
+// Only active crops are clickable
+document.querySelectorAll(".crop:not(.coming-soon)").forEach(b=>b.onclick=()=>chooseCrop(b.dataset.crop));
+$("backCrop").onclick=()=>{resetPhoto();show(1);};
+$("homeBtn").onclick=()=>{resetPhoto();show(1);};
+$("camBtn").onclick=()=>$("camIn").click();
+$("upBtn").onclick=()=>$("upIn").click();
+$("retakeBtn").onclick=()=>{resetPhoto();$("camIn").click();};
+$("replaceBtn").onclick=()=>{resetPhoto();$("upIn").click();};
+$("againBtn").onclick=()=>{resetPhoto();show(2);};
+$("otherCropBtn").onclick=()=>{resetPhoto();show(1);};
+$("camIn").onchange=e=>handleFile(e.target.files[0]);
+$("upIn").onchange=e=>handleFile(e.target.files[0]);
+
+function handleFile(f){
+  clearErr();
+  if(!f) return;
+  const okType = ALLOWED.includes(f.type) || /\.(jpe?g|png|webp)$/i.test(f.name);
+  if(!okType){ showErr("This file type is not supported. Please use a JPG, PNG or WEBP photo."); return; }
+  if(f.size > MAX_MB*1024*1024){ showErr("This photo is too large (over "+MAX_MB+" MB). Please choose a smaller photo or take a new one."); return; }
+  file=f;
+  if(previewURL) URL.revokeObjectURL(previewURL);
+  previewURL=URL.createObjectURL(f);
+  $("prev").src=previewURL;
+  $("fileInfo").textContent=f.name+" · "+(f.size/1024/1024).toFixed(1)+" MB";
+  $("pickBox").classList.add("hide");
+  $("prevBox").classList.remove("hide");
+}
+
+$("analyzeBtn").onclick=async()=>{
+  if(!file) return;
+  clearErr();
+  $("prevBox").classList.add("hide");
+  $("tipsCard").classList.add("hide");
+  $("loading").classList.remove("hide");
+  try{
+    const fd=new FormData();
+    fd.append(FILE_FIELD,file);
+    if(CROP_FIELD) fd.append(CROP_FIELD,crop.toLowerCase());
+    const res=await fetch(API_URL,{method:"POST",body:fd});
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    const out=mapResponse(await res.json());
+    if(!out.label) throw new Error("empty");
+    showResult(out);
+  }catch(e){
+    $("loading").classList.add("hide");
+    $("prevBox").classList.remove("hide");
+    $("tipsCard").classList.remove("hide");
+    showErr("We could not check this photo. Please check your connection and try again, or choose another photo.");
+  }
+};
+
+function showResult(out){
+  const d=describe(out.label);
+  $("resImg").src=previewURL;
+  $("resCrop").textContent=crop;
+  $("resName").textContent=d.name;
+  $("advice").innerHTML="";
+  d.tips.forEach(t=>{const li=document.createElement("li");li.textContent=t;$("advice").appendChild(li);});
+  $("adviceTitle").textContent = d.name==="Healthy leaf" ? "Keeping it healthy" : "What you can do";
+
+  let pct=null;
+  if(typeof out.confidence==="number" && isFinite(out.confidence)){
+    pct = out.confidence<=1 ? out.confidence*100 : out.confidence;
+    pct = Math.max(0,Math.min(100,pct));
+  }
+  if(pct===null){ $("confWrap").classList.add("hide"); }
+  else{
+    $("confWrap").classList.remove("hide");
+    $("confTxt").textContent=pct.toFixed(1)+"%";
+    $("confBar").style.width=pct+"%";
+  }
+  const unsure = out.uncertain || (UNCERTAIN_BELOW!==null && pct!==null && pct<UNCERTAIN_BELOW);
+  const u=$("uncertain");
+  if(unsure){
+    u.textContent="The result is not certain. Please take a clearer photo of one leaf in good light, or ask an agriculture officer to check.";
+    u.classList.remove("hide");
+  } else u.classList.add("hide");
+
+  $("loading").classList.add("hide");
+  show(3);
+}
+</script>
+</body>
+</html>

@@ -20,7 +20,10 @@ export const ONNXDebugPanel: React.FC<ONNXDebugPanelProps> = ({ result }) => {
     classProbabilities,
     rawLogits,
     pipelineStages,
-    classifierInfo
+    classifierInfo,
+    secondPrediction,
+    topMargin,
+    uncertainty
   } = result;
 
   const activeModelInfo = classifierInfo || MOBILENETV3_V2_METADATA;
@@ -39,7 +42,7 @@ export const ONNXDebugPanel: React.FC<ONNXDebugPanelProps> = ({ result }) => {
         '1. Image Quality Inspection',
         '2. YOLO Leaf Detection (ROI)',
         '3. SAM Leaf Segmentation',
-        '4. MobileNetV3 V2 Disease Classification',
+        `4. ${activeModelInfo.modelName} Disease Classification`,
         '5. Confidence Calibration & Softmax',
         '6. LIME Explainability',
         '7. Disease Knowledge & Agronomic Guidance'
@@ -47,6 +50,14 @@ export const ONNXDebugPanel: React.FC<ONNXDebugPanelProps> = ({ result }) => {
       predictedClassIndex,
       predictedClassName,
       confidence: `${confidence.toFixed(2)}%`,
+      topMargin: topMargin !== undefined ? `${topMargin.toFixed(2)} pp` : undefined,
+      secondPrediction: secondPrediction ? {
+        classIndex: secondPrediction.classIndex,
+        className: secondPrediction.className,
+        displayName: secondPrediction.displayName,
+        probability: `${secondPrediction.probability.toFixed(2)}%`
+      } : undefined,
+      uncertaintyEvaluation: uncertainty,
       inputShape: activeModelInfo.inputShape,
       rawLogits,
       allClassProbabilities: classProbabilities,
@@ -70,7 +81,7 @@ export const ONNXDebugPanel: React.FC<ONNXDebugPanelProps> = ({ result }) => {
       >
         <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400">
           <Terminal className="w-4 h-4 text-emerald-400" />
-          <span>AI Pipeline & MobileNetV3 V2 Debugger</span>
+          <span>AI Pipeline & {activeModelInfo.modelName} Debugger</span>
           <span className="bg-emerald-950 text-emerald-300 text-[10px] px-2 py-0.5 rounded border border-emerald-800">
             {activeModelInfo.checkpoint}
           </span>
@@ -179,8 +190,27 @@ export const ONNXDebugPanel: React.FC<ONNXDebugPanelProps> = ({ result }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] bg-slate-900/60 p-3 rounded-xl border border-slate-800">
             <div><span className="text-slate-400">Request ID:</span> <span className="text-emerald-400 font-bold">{scanId}</span></div>
             <div><span className="text-slate-400">Timestamp:</span> <span>{timestamp}</span></div>
-            <div><span className="text-slate-400">Argmax Index:</span> <span className="text-emerald-400 font-bold">{predictedClassIndex}</span></div>
-            <div><span className="text-slate-400">Argmax Class:</span> <span className="text-emerald-400 font-bold">{predictedClassName}</span></div>
+            <div><span className="text-slate-400">Top Prediction:</span> <span className="text-emerald-400 font-bold">[{predictedClassIndex}] {predictedClassName}</span></div>
+            <div>
+              <span className="text-slate-400">Top-Two Margin:</span>{' '}
+              <span className={topMargin !== undefined && topMargin < 10.0 ? 'text-amber-400 font-bold' : 'text-emerald-400 font-bold'}>
+                {topMargin !== undefined ? `${topMargin.toFixed(1)} pp` : 'N/A'}
+              </span>
+            </div>
+            {secondPrediction && (
+              <div className="sm:col-span-2">
+                <span className="text-slate-400">Runner-Up Class:</span>{' '}
+                <span className="text-amber-300 font-bold">[{secondPrediction.classIndex}] {secondPrediction.displayName} ({secondPrediction.probability.toFixed(1)}%)</span>
+              </div>
+            )}
+            {uncertainty && (
+              <div className="sm:col-span-2">
+                <span className="text-slate-400">Uncertainty Status:</span>{' '}
+                <span className={uncertainty.isUncertain ? 'text-amber-400 font-bold' : 'text-emerald-400 font-bold'}>
+                  {uncertainty.isUncertain ? `Uncertain (${uncertainty.reasons.join('; ') || 'Low confidence or narrow margin'})` : 'Confident & Well-Separated'}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="space-y-1.5">

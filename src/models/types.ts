@@ -30,6 +30,8 @@ export interface ImageQualityStatus {
   issueDescription?: string;
   brightness?: number;
   contrast?: number;
+  blurScore?: number;
+  isBlurry?: boolean;
 }
 
 export interface BoundingBox {
@@ -54,6 +56,10 @@ export interface LeafSegmentation {
   isolatedLeafImageUrl?: string;
   polygon?: [number, number][];
   areaRatio?: number;
+  iou?: number;
+  isRealSAM?: boolean;
+  modelIdentifier?: string;
+  inferenceTimeMs?: number;
 }
 
 export interface LimeFeatureAttribution {
@@ -72,6 +78,27 @@ export interface LimeExplanation {
   summary?: string;
 }
 
+export interface SecondClassPrediction {
+  classIndex: number;
+  className: string;
+  displayName: string;
+  probability: number; // percentage 0 - 100
+  disease?: DiseaseKnowledge;
+}
+
+export interface UncertaintyEvaluation {
+  isUncertain: boolean;
+  isWeakConfidence: boolean;
+  isAmbiguous: boolean;
+  topConfidence: number; // percentage 0 - 100
+  secondConfidence: number; // percentage 0 - 100
+  topMargin: number; // percentage points difference
+  confidenceThreshold: number; // provisional threshold
+  marginThreshold: number; // provisional threshold
+  warningMessage?: string;
+  reasons: string[];
+}
+
 export interface DetectedLeafAnalysis {
   leafId: string;
   detection: LeafDetection;
@@ -80,6 +107,9 @@ export interface DetectedLeafAnalysis {
   className: string;
   confidence: number;
   classProbabilities: ClassProbability[];
+  secondPrediction?: SecondClassPrediction;
+  topMargin?: number;
+  uncertainty?: UncertaintyEvaluation;
   explanation?: LimeExplanation;
 }
 
@@ -125,6 +155,9 @@ export interface FullAnalysisResult {
   confidenceLevel: ConfidenceLevel;
   confidenceLabel: string;
   classProbabilities: ClassProbability[];
+  secondPrediction?: SecondClassPrediction;
+  topMargin?: number;
+  uncertainty?: UncertaintyEvaluation;
   rawLogits: number[];
   imageQuality: ImageQualityStatus;
   isMockPrediction: false;

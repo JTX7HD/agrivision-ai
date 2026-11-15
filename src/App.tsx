@@ -2,15 +2,21 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   Leaf, Camera, Upload, Home, LayoutGrid, ScanLine, History as HistoryIcon,
   Info, ChevronRight, ArrowRight, Menu, X,
-  FlaskConical, ClipboardCheck
+  FlaskConical, ClipboardCheck, RotateCcw,
+  FileText, Download, ExternalLink
 } from "lucide-react";
 import type { CropId, FullAnalysisResult, ScanItem, PipelineStageStatus } from "./models/types";
 import { CROPS_DATA, getCropById } from "./data/cropsData";
 import { analyzeLeafPipeline } from "./services/aiService";
+import { clearModelSessionCache } from "./services/onnx/modelLoader";
 import { useScanHistory } from "./hooks/useScanHistory";
 import { useCameraStream } from "./hooks/useCameraStream";
 import { DiseaseResultCard } from "./components/result/DiseaseResultCard";
 import { PipelineVisualizer } from "./components/analysis/PipelineVisualizer";
+import { TrainingControlPanel } from "./components/dashboard/TrainingControlPanel";
+import { I18nProvider, useTranslation } from "./i18n/i18nContext";
+import { LanguageSelector } from "./components/common/LanguageSelector";
+import type { TranslationDictionary } from "./i18n/types";
 
 /* ---------------------------------------------------------
    DESIGN TOKENS
@@ -85,19 +91,26 @@ function LeafMark({ size = 28, color = C.forest }: { size?: number; color?: stri
 
 
 
-const NAV_ITEMS = [
-  { id: "home", label: "Home", icon: Home },
-  { id: "dashboard", label: "Dashboard", icon: LayoutGrid },
-  { id: "scan", label: "Scan", icon: ScanLine },
-  { id: "history", label: "History", icon: HistoryIcon },
-  { id: "about", label: "About", icon: Info },
-];
+const LanguageSwitcher = LanguageSelector;
+
+function getNavItems(t: TranslationDictionary) {
+  return [
+    { id: "home", label: t.nav.home, icon: Home },
+    { id: "dashboard", label: t.nav.dashboard, icon: LayoutGrid },
+    { id: "scan", label: t.nav.scan, icon: ScanLine },
+    { id: "history", label: t.nav.history, icon: HistoryIcon },
+    { id: "about", label: t.nav.about, icon: Info },
+  ];
+}
 
 /* ---------------------------------------------------------
    NAVIGATION
 --------------------------------------------------------- */
 function TopNav({ view, setView }: { view: string; setView: (v: string) => void }) {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
+  const navItems = getNavItems(t);
+
   return (
     <header
       className="sticky top-0 z-30 border-b"
@@ -105,7 +118,7 @@ function TopNav({ view, setView }: { view: string; setView: (v: string) => void 
     >
       <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
         <button
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 cursor-pointer"
           onClick={() => setView("home")}
         >
           <LeafMark size={24} />
@@ -114,34 +127,50 @@ function TopNav({ view, setView }: { view: string; setView: (v: string) => void 
           </span>
         </button>
 
-        <nav className="hidden md:flex items-center gap-1">
-          {NAV_ITEMS.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setView(item.id)}
-              className="px-4 py-2 rounded-full text-sm font-medium transition-colors"
-              style={{
-                color: view === item.id ? C.cream : C.inkSoft,
-                background: view === item.id ? C.forest : "transparent",
-              }}
-            >
-              {item.label}
-            </button>
-          ))}
-        </nav>
+        <div className="hidden md:flex items-center gap-4">
+          <nav className="flex items-center gap-1">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setView(item.id)}
+                className="px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer"
+                style={{
+                  color: view === item.id ? C.cream : C.inkSoft,
+                  background: view === item.id ? C.forest : "transparent",
+                }}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+          <a
+            href="/AgriVision_AI_Project_Report.pdf"
+            download="AgriVision_AI_Project_Report.pdf"
+            title="Download Official 56-Page Capstone Project Report (PDF)"
+            className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border shadow-sm hover:opacity-90"
+            style={{ background: C.sand, borderColor: C.sandDark, color: C.forest }}
+          >
+            <Download size={13} />
+            <span>Report PDF</span>
+          </a>
+          <LanguageSwitcher />
+        </div>
 
-        <button
-          className="md:hidden p-2"
-          onClick={() => setOpen(!open)}
-          aria-label="Menu"
-        >
-          {open ? <X size={22} color={C.ink} /> : <Menu size={22} color={C.ink} />}
-        </button>
+        <div className="md:hidden flex items-center gap-2">
+          <LanguageSwitcher />
+          <button
+            className="p-2 cursor-pointer"
+            onClick={() => setOpen(!open)}
+            aria-label="Menu"
+          >
+            {open ? <X size={22} color={C.ink} /> : <Menu size={22} color={C.ink} />}
+          </button>
+        </div>
       </div>
 
       {open && (
         <div className="md:hidden border-t px-5 py-3 flex flex-col gap-1" style={{ borderColor: C.sandDark }}>
-          {NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => { setView(item.id); setOpen(false); }}
@@ -154,6 +183,16 @@ function TopNav({ view, setView }: { view: string; setView: (v: string) => void 
               {item.label}
             </button>
           ))}
+          <a
+            href="/AgriVision_AI_Project_Report.pdf"
+            download="AgriVision_AI_Project_Report.pdf"
+            className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-semibold mt-1"
+            style={{ background: C.forest, color: C.cream }}
+            onClick={() => setOpen(false)}
+          >
+            <Download size={15} />
+            <span>Download Project Report (PDF)</span>
+          </a>
         </div>
       )}
     </header>
@@ -161,19 +200,22 @@ function TopNav({ view, setView }: { view: string; setView: (v: string) => void 
 }
 
 function BottomNav({ view, setView }: { view: string; setView: (v: string) => void }) {
+  const { t } = useTranslation();
+  const navItems = getNavItems(t);
+
   return (
     <nav
       className="md:hidden fixed bottom-0 left-0 right-0 z-30 border-t flex justify-around py-2"
       style={{ background: C.cream, borderColor: C.sandDark }}
     >
-      {NAV_ITEMS.map((item) => {
+      {navItems.map((item) => {
         const Icon = item.icon;
         const active = view === item.id;
         return (
           <button
             key={item.id}
             onClick={() => setView(item.id)}
-            className="flex flex-col items-center gap-0.5 px-3 py-1"
+            className="flex flex-col items-center gap-0.5 px-3 py-1 cursor-pointer"
           >
             <Icon size={20} color={active ? C.forest : C.olive} strokeWidth={active ? 2.4 : 2} />
             <span className="text-[10px] font-medium" style={{ color: active ? C.forest : C.olive }}>
@@ -190,38 +232,39 @@ function BottomNav({ view, setView }: { view: string; setView: (v: string) => vo
    HOME / LANDING
 --------------------------------------------------------- */
 function HomeView({ setView }: { setView: (v: string) => void }) {
+  const { t } = useTranslation();
+
   return (
     <div>
       {/* Hero */}
       <section className="max-w-6xl mx-auto px-5 pt-14 pb-10 grid md:grid-cols-2 gap-10 items-center">
         <div>
           <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: C.leaf }}>
-            For farmers, by design
+            {t.home.badge}
           </p>
           <h1
             className="text-4xl md:text-5xl font-bold leading-tight mb-5"
             style={{ color: C.ink, fontFamily: "Manrope" }}
           >
-            Know what's wrong with your crop, right from your phone.
+            {t.home.heroTitle}
           </h1>
           <p className="text-base leading-relaxed mb-8 max-w-md" style={{ color: C.inkSoft }}>
-            Take a photo of an affected leaf and AgriVision AI checks it for disease,
-            tells you how serious it is, and what to do next — in plain language.
+            {t.home.heroDesc}
           </p>
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setView("scan")}
-              className="flex items-center gap-2 px-6 py-3.5 rounded-lg font-semibold text-sm shadow-md transition-all active:scale-95"
+              className="flex items-center gap-2 px-6 py-3.5 rounded-lg font-semibold text-sm shadow-md transition-all active:scale-95 cursor-pointer"
               style={{ background: C.forest, color: C.cream }}
             >
-              <Camera size={17} /> Scan Your Crop
+              <Camera size={17} /> {t.home.scanCropBtn}
             </button>
             <button
               onClick={() => setView("about")}
-              className="flex items-center gap-2 px-6 py-3.5 rounded-lg font-semibold text-sm border hover:bg-slate-100/50"
+              className="flex items-center gap-2 px-6 py-3.5 rounded-lg font-semibold text-sm border hover:bg-slate-100/50 cursor-pointer"
               style={{ borderColor: C.olive, color: C.ink }}
             >
-              How It Works
+              {t.home.howItWorksBtn}
             </button>
           </div>
         </div>
@@ -241,8 +284,8 @@ function HomeView({ setView }: { setView: (v: string) => void }) {
           </svg>
           <div className="absolute bottom-5 left-5 right-5 bg-black/30 backdrop-blur-md border border-white/20 rounded-lg px-4 py-3 shadow-lg">
             <p className="text-xs font-semibold flex items-center justify-between" style={{ color: C.cream }}>
-              <span>Early Blight detected — Tomato</span>
-              <span className="font-bold text-emerald-300">94.2% Confidence</span>
+              <span>{t.home.sampleDetected}</span>
+              <span className="font-bold text-emerald-300">{t.home.sampleConfidence}</span>
             </p>
           </div>
         </div>
@@ -252,14 +295,14 @@ function HomeView({ setView }: { setView: (v: string) => void }) {
 
       {/* How it works */}
       <section className="max-w-6xl mx-auto px-5 py-14">
-        <h2 className="text-2xl font-bold mb-2" style={{ color: C.ink, fontFamily: "Manrope" }}>How it works</h2>
-        <p className="text-sm mb-8" style={{ color: C.inkSoft }}>Four steps, no technical knowledge needed.</p>
+        <h2 className="text-2xl font-bold mb-2" style={{ color: C.ink, fontFamily: "Manrope" }}>{t.home.howItWorksTitle}</h2>
+        <p className="text-sm mb-8" style={{ color: C.inkSoft }}>{t.home.howItWorksSubtitle}</p>
         <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-5">
           {[
-            { n: "01", t: "Capture", d: "Take a clear photo of the affected leaf.", icon: Camera },
-            { n: "02", t: "Detect", d: "AgriVision finds and isolates the leaf.", icon: ScanLine },
-            { n: "03", t: "Analyze", d: "The leaf is checked for signs of disease.", icon: FlaskConical },
-            { n: "04", t: "Get Guidance", d: "You get a clear result and next steps.", icon: ClipboardCheck },
+            { n: "01", t: t.home.step1Title, d: t.home.step1Desc, icon: Camera },
+            { n: "02", t: t.home.step2Title, d: t.home.step2Desc, icon: ScanLine },
+            { n: "03", t: t.home.step3Title, d: t.home.step3Desc, icon: FlaskConical },
+            { n: "04", t: t.home.step4Title, d: t.home.step4Desc, icon: ClipboardCheck },
           ].map((s) => (
             <div key={s.n} className="p-5 rounded-xl border border-amber-950/10 shadow-sm" style={{ background: C.sand }}>
               <div className="flex items-center justify-between mb-4">
@@ -275,37 +318,50 @@ function HomeView({ setView }: { setView: (v: string) => void }) {
 
       {/* Supported crops */}
       <section className="max-w-6xl mx-auto px-5 py-14">
-        <h2 className="text-2xl font-bold mb-2" style={{ color: C.ink, fontFamily: "Manrope" }}>Supported crops</h2>
-        <p className="text-sm mb-8" style={{ color: C.inkSoft }}>Disease detection is currently available for these crops.</p>
+        <h2 className="text-2xl font-bold mb-2" style={{ color: C.ink, fontFamily: "Manrope" }}>{t.home.supportedCropsTitle}</h2>
+        <p className="text-sm mb-8" style={{ color: C.inkSoft }}>{t.home.supportedCropsSubtitle}</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-          {CROPS_DATA.map((c) => (
-            <button
-              key={c.id}
-              onClick={() => setView("scan")}
-              className="flex flex-col items-center gap-2 p-4 rounded-xl border hover:border-emerald-700 transition-all text-center group cursor-pointer"
-              style={{ borderColor: C.sandDark, background: C.cream }}
-            >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl group-hover:scale-110 transition-transform" style={{ background: C.sand }}>
-                {c.icon}
-              </div>
-              <span className="text-sm font-semibold" style={{ color: C.ink }}>{c.name}</span>
-            </button>
-          ))}
+          {CROPS_DATA.map((c) => {
+            const isSupported = c.supported;
+            return (
+              <button
+                key={c.id}
+                disabled={!isSupported}
+                onClick={() => isSupported && setView("scan")}
+                className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border transition-all text-center group ${
+                  isSupported ? "hover:border-emerald-700 cursor-pointer" : "opacity-60 cursor-not-allowed border-dashed"
+                }`}
+                style={{ borderColor: isSupported ? C.sandDark : "#cbd5e1", background: isSupported ? C.cream : "#f8fafc" }}
+              >
+                {!isSupported && (
+                  <span className="absolute top-2 right-2 px-1.5 py-0.5 bg-amber-100 border border-amber-300 text-[8px] font-bold text-amber-800 rounded-full uppercase tracking-tight">
+                    Soon
+                  </span>
+                )}
+                <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl group-hover:scale-110 transition-transform" style={{ background: C.sand }}>
+                  {c.icon}
+                </div>
+                <span className="text-sm font-semibold" style={{ color: C.ink }}>
+                  {t.crops[c.id as keyof typeof t.crops] || c.name}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </section>
 
       <section className="px-5 pb-16">
         <div className="max-w-4xl mx-auto rounded-2xl px-8 py-10 text-center shadow-lg" style={{ background: C.forest }}>
           <h2 className="text-2xl font-bold mb-2" style={{ color: C.cream, fontFamily: "Manrope" }}>
-            Ready to check on your crop?
+            {t.home.readyTitle}
           </h2>
-          <p className="text-sm mb-6" style={{ color: "#D8E0CC" }}>It takes less than a minute.</p>
+          <p className="text-sm mb-6" style={{ color: "#D8E0CC" }}>{t.home.readySubtitle}</p>
           <button
             onClick={() => setView("scan")}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm shadow-md transition-transform active:scale-95 cursor-pointer"
             style={{ background: C.cream, color: C.forest }}
           >
-            Scan Your Crop <ArrowRight size={16} />
+            {t.home.scanCropBtn} <ArrowRight size={16} />
           </button>
         </div>
       </section>
@@ -325,14 +381,16 @@ function DashboardView({
   scans: ScanItem[];
   onSelectScan: (scan: ScanItem) => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="max-w-5xl mx-auto px-5 py-10 pb-24 md:pb-10">
-      <h1 className="text-2xl font-bold mb-1" style={{ color: C.ink, fontFamily: "Manrope" }}>Welcome back</h1>
-      <p className="text-sm mb-8" style={{ color: C.inkSoft }}>Here's how your crops are doing.</p>
+      <h1 className="text-2xl font-bold mb-1" style={{ color: C.ink, fontFamily: "Manrope" }}>{t.dashboard.title}</h1>
+      <p className="text-sm mb-8" style={{ color: C.inkSoft }}>{t.dashboard.subtitle}</p>
 
       <button
         onClick={() => setView("scan")}
-        className="w-full flex items-center justify-between p-6 rounded-2xl mb-8 text-left shadow-md transition-all active:scale-[0.99]"
+        className="w-full flex items-center justify-between p-6 rounded-2xl mb-8 text-left shadow-md transition-all active:scale-[0.99] cursor-pointer"
         style={{ background: C.forest }}
       >
         <div className="flex items-center gap-4">
@@ -340,25 +398,27 @@ function DashboardView({
             <Camera size={22} color={C.cream} />
           </div>
           <div>
-            <p className="font-semibold" style={{ color: C.cream }}>Scan a leaf</p>
-            <p className="text-xs" style={{ color: "#C9D3B8" }}>Check a crop for disease now</p>
+            <p className="font-semibold" style={{ color: C.cream }}>{t.dashboard.scanLeaf}</p>
+            <p className="text-xs" style={{ color: "#C9D3B8" }}>{t.dashboard.scanLeafSub}</p>
           </div>
         </div>
         <ChevronRight size={20} color={C.cream} />
       </button>
 
       <div className="mb-8">
-        <h2 className="font-semibold mb-3" style={{ color: C.ink }}>Select Crop to Scan</h2>
+        <h2 className="font-semibold mb-3" style={{ color: C.ink }}>{t.dashboard.selectCropToScan}</h2>
         <div className="flex gap-3 overflow-x-auto pb-1">
           {CROPS_DATA.map((c) => (
             <button
               key={c.id}
               onClick={() => setView("scan")}
-              className="shrink-0 flex flex-col items-center gap-2 px-5 py-4 rounded-xl border border-sandDark hover:border-emerald-700 transition-colors"
+              className="shrink-0 flex flex-col items-center gap-2 px-5 py-4 rounded-xl border border-sandDark hover:border-emerald-700 transition-colors cursor-pointer"
               style={{ background: C.sand }}
             >
               <span className="text-2xl">{c.icon}</span>
-              <span className="text-xs font-semibold" style={{ color: C.ink }}>{c.name}</span>
+              <span className="text-xs font-semibold" style={{ color: C.ink }}>
+                {t.crops[c.id as keyof typeof t.crops] || c.name}
+              </span>
             </button>
           ))}
         </div>
@@ -366,8 +426,10 @@ function DashboardView({
 
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold" style={{ color: C.ink }}>Recent checks</h2>
-          <button onClick={() => setView("history")} className="text-sm font-medium" style={{ color: C.leaf }}>See all</button>
+          <h2 className="font-semibold" style={{ color: C.ink }}>{t.dashboard.recentChecks}</h2>
+          <button onClick={() => setView("history")} className="text-sm font-medium cursor-pointer" style={{ color: C.leaf }}>
+            {t.dashboard.seeAll}
+          </button>
         </div>
         <div className="rounded-xl border divide-y shadow-sm overflow-hidden" style={{ borderColor: C.sandDark, background: C.cream }}>
           {scans.slice(0, 5).map((s) => (
@@ -385,16 +447,21 @@ function DashboardView({
                 <div className="min-w-0">
                   <p className="text-sm font-medium truncate" style={{ color: C.ink }}>{s.cropName} · {s.diseaseName}</p>
                   <p className="text-xs" style={{ color: C.inkSoft }}>
-                    {new Date(s.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} • {s.confidence}% match
+                    {new Date(s.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} • {s.confidence}% {t.dashboard.match}
                   </p>
                 </div>
               </div>
               <span className="px-2.5 py-1 rounded-full text-[10px] font-bold border bg-emerald-500/10 text-emerald-600 border-emerald-500/30">
-                {s.confidenceLevel || 'High'} Confidence
+                {s.confidenceLevel || 'High'} {t.dashboard.confidence}
               </span>
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Direct Correction Learning & Training Control */}
+      <div className="mt-10">
+        <TrainingControlPanel />
       </div>
     </div>
   );
@@ -416,6 +483,7 @@ function ScanView({
   onImageSelected: (img: string | null) => void;
   onStartAnalysis: () => void;
 }) {
+  const { t } = useTranslation();
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   const {
@@ -450,34 +518,47 @@ function ScanView({
   return (
     <div className="max-w-2xl mx-auto px-5 py-10 pb-24 md:pb-10 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold mb-1" style={{ color: C.ink, fontFamily: "Manrope" }}>Check a leaf</h1>
+        <h1 className="text-2xl font-bold mb-1" style={{ color: C.ink, fontFamily: "Manrope" }}>{t.scan.title}</h1>
         <p className="text-sm" style={{ color: C.inkSoft }}>
-          Select your crop and take a clear photo of the affected leaf in good lighting.
+          {t.scan.subtitle}
         </p>
       </div>
 
       <div>
         <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: C.inkSoft }}>
-          Step 1: Select Crop
+          {t.scan.step1}
         </label>
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
           {CROPS_DATA.map((c) => {
             const isSelected = selectedCropId === c.id;
+            const isSupported = c.supported;
             return (
               <button
                 key={c.id}
                 type="button"
-                onClick={() => onSelectCrop(c.id)}
-                className={`p-2.5 rounded-xl border flex flex-col items-center gap-1 transition-all ${
-                  isSelected ? "border-2 shadow-sm font-bold" : "opacity-80"
+                disabled={!isSupported}
+                onClick={() => isSupported && onSelectCrop(c.id)}
+                className={`relative p-2.5 rounded-xl border flex flex-col items-center gap-1 transition-all ${
+                  !isSupported
+                    ? "opacity-50 cursor-not-allowed border-dashed"
+                    : isSelected
+                    ? "border-2 shadow-sm font-bold cursor-pointer"
+                    : "opacity-80 cursor-pointer"
                 }`}
                 style={{
-                  borderColor: isSelected ? C.forest : C.sandDark,
-                  background: isSelected ? C.sand : C.cream
+                  borderColor: isSelected ? C.forest : isSupported ? C.sandDark : "#cbd5e1",
+                  background: isSelected ? C.sand : isSupported ? C.cream : "#f8fafc"
                 }}
               >
+                {!isSupported && (
+                  <span className="absolute -top-1.5 px-1 py-0.2 bg-amber-100 border border-amber-300 text-[8px] font-bold text-amber-800 rounded-full uppercase tracking-tight">
+                    Soon
+                  </span>
+                )}
                 <span className="text-xl">{c.icon}</span>
-                <span className="text-xs" style={{ color: C.ink }}>{c.name}</span>
+                <span className="text-xs" style={{ color: C.ink }}>
+                  {t.crops[c.id as keyof typeof t.crops] || c.name}
+                </span>
               </button>
             );
           })}
@@ -486,7 +567,7 @@ function ScanView({
 
       <div>
         <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: C.inkSoft }}>
-          Step 2: Capture or Upload Image
+          {t.scan.step2}
         </label>
 
         {isCameraActive ? (
@@ -496,14 +577,14 @@ function ScanView({
               <button
                 type="button"
                 onClick={handleCapture}
-                className="w-14 h-14 rounded-full bg-white border-4 border-emerald-600 shadow-xl flex items-center justify-center active:scale-95"
+                className="w-14 h-14 rounded-full bg-white border-4 border-emerald-600 shadow-xl flex items-center justify-center active:scale-95 cursor-pointer"
               >
                 <div className="w-10 h-10 rounded-full bg-emerald-600" />
               </button>
               <button
                 type="button"
                 onClick={stopCamera}
-                className="p-2.5 rounded-full bg-slate-900/80 text-white backdrop-blur-md"
+                className="p-2.5 rounded-full bg-slate-900/80 text-white backdrop-blur-md cursor-pointer"
               >
                 <X size={18} />
               </button>
@@ -520,7 +601,7 @@ function ScanView({
                 <button
                   type="button"
                   onClick={() => onImageSelected(null)}
-                  className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/70 text-white hover:bg-red-600"
+                  className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/70 text-white hover:bg-red-600 cursor-pointer"
                 >
                   <X size={16} />
                 </button>
@@ -530,8 +611,8 @@ function ScanView({
                 <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3 shadow-sm" style={{ background: C.cream }}>
                   <Leaf size={22} color={C.leaf} />
                 </div>
-                <p className="text-sm font-semibold mb-1" style={{ color: C.ink }}>No photo selected yet</p>
-                <p className="text-xs max-w-xs" style={{ color: C.inkSoft }}>Center the affected leaf and avoid shadows for the clearest result.</p>
+                <p className="text-sm font-semibold mb-1" style={{ color: C.ink }}>{t.scan.noPhoto}</p>
+                <p className="text-xs max-w-xs" style={{ color: C.inkSoft }}>{t.scan.photoAdvice}</p>
               </>
             )}
           </div>
@@ -550,30 +631,30 @@ function ScanView({
         <button
           type="button"
           onClick={startCamera}
-          className="flex items-center justify-center gap-2 py-3.5 rounded-lg font-semibold text-sm shadow-md transition-all active:scale-95"
+          className="flex items-center justify-center gap-2 py-3.5 rounded-lg font-semibold text-sm shadow-md transition-all active:scale-95 cursor-pointer"
           style={{ background: C.forest, color: C.cream }}
         >
-          <Camera size={17} /> Open Camera
+          <Camera size={17} /> {t.scan.openCamera}
         </button>
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          className="flex items-center justify-center gap-2 py-3.5 rounded-lg font-semibold text-sm border hover:bg-slate-100"
+          className="flex items-center justify-center gap-2 py-3.5 rounded-lg font-semibold text-sm border hover:bg-slate-100 cursor-pointer"
           style={{ borderColor: C.olive, color: C.ink }}
         >
-          <Upload size={17} /> Upload Photo
+          <Upload size={17} /> {t.scan.uploadPhoto}
         </button>
       </div>
 
       <div className="pt-2">
         <span className="text-xs font-bold uppercase tracking-wider block mb-2" style={{ color: C.inkSoft }}>
-          Or Select Demo Sample Leaf
+          {t.scan.orSelectDemo}
         </span>
         <div className="grid grid-cols-3 gap-2">
           {[
-            { name: "Tomato Blight", crop: "tomato", url: "https://images.unsplash.com/photo-1592841200221-a6898f307baa?auto=format&fit=crop&w=600&q=80" },
-            { name: "Potato Lesion", crop: "potato", url: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=600&q=80" },
-            { name: "Maize Rust", crop: "maize", url: "https://images.unsplash.com/photo-1601593346740-925612772716?auto=format&fit=crop&w=600&q=80" }
+            { name: "Tomato Blight", crop: "tomato", url: "/samples/tomato_sample.jpg" },
+            { name: "Potato Early Blight", crop: "potato", url: "/samples/potato_sample.jpg" },
+            { name: "Chilli Bacterial Spot", crop: "chilli", url: "/samples/chilli_sample.jpg" }
           ].map((sample, idx) => (
             <button
               key={idx}
@@ -582,7 +663,7 @@ function ScanView({
                 onSelectCrop(sample.crop as CropId);
                 onImageSelected(sample.url);
               }}
-              className="p-2 rounded-xl border flex flex-col items-center gap-1 bg-white hover:border-emerald-600 transition-colors shadow-sm"
+              className="p-2 rounded-xl border flex flex-col items-center gap-1 bg-white hover:border-emerald-600 transition-colors shadow-sm cursor-pointer"
               style={{ borderColor: C.sandDark }}
             >
               <img src={sample.url} alt={sample.name} className="w-10 h-10 rounded-md object-cover" />
@@ -598,7 +679,7 @@ function ScanView({
         className="w-full py-3.5 rounded-lg font-semibold text-sm shadow-md disabled:opacity-40 transition-all active:scale-98 cursor-pointer"
         style={{ background: C.ink, color: C.cream }}
       >
-        Check this leaf with AI Pipeline
+        {t.scan.checkLeafBtn}
       </button>
     </div>
   );
@@ -662,6 +743,7 @@ function AnalysisView({
     }
   ]);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     let isSubscribed = true;
@@ -698,7 +780,7 @@ function AnalysisView({
     return () => {
       isSubscribed = false;
     };
-  }, [selectedImage, cropId, onDone]);
+  }, [selectedImage, cropId, onDone, retryCount]);
 
   if (analysisError) {
     return (
@@ -709,15 +791,28 @@ function AnalysisView({
         <h3 className="text-xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "Manrope" }}>
           Analysis Warning
         </h3>
-        <p className="text-sm text-slate-400 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+        <p className="text-sm text-slate-400 bg-slate-900/60 p-4 rounded-2xl border border-slate-800 leading-relaxed">
           {analysisError}
         </p>
-        <button
-          onClick={onError}
-          className="px-6 py-3 rounded-2xl font-bold text-sm bg-emerald-500 hover:bg-emerald-600 text-slate-950 transition-all shadow-lg shadow-emerald-500/20"
-        >
-          Select Another Image
-        </button>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+          <button
+            onClick={() => {
+              clearModelSessionCache();
+              setAnalysisError(null);
+              setRetryCount((c) => c + 1);
+            }}
+            className="w-full sm:w-auto px-6 py-3 rounded-2xl font-bold text-sm bg-emerald-500 hover:bg-emerald-600 text-slate-950 transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
+          >
+            <RotateCcw size={16} />
+            <span>Retry Analysis</span>
+          </button>
+          <button
+            onClick={onError}
+            className="w-full sm:w-auto px-6 py-3 rounded-2xl font-semibold text-sm bg-slate-800 hover:bg-slate-700 text-slate-200 transition-all border border-slate-700"
+          >
+            Select Another Image
+          </button>
+        </div>
       </div>
     );
   }
@@ -739,16 +834,18 @@ function ResultsView({
   result: FullAnalysisResult | null;
   setView: (v: string) => void;
 }) {
+  const { t } = useTranslation();
+
   if (!result) {
     return (
       <div className="max-w-2xl mx-auto px-5 py-16 text-center space-y-4">
-        <p className="text-sm" style={{ color: C.inkSoft }}>No scan result selected.</p>
+        <p className="text-sm" style={{ color: C.inkSoft }}>{t.history.noHistory}</p>
         <button
           onClick={() => setView("scan")}
-          className="px-5 py-2.5 rounded-lg font-semibold text-sm"
+          className="px-5 py-2.5 rounded-lg font-semibold text-sm cursor-pointer"
           style={{ background: C.forest, color: C.cream }}
         >
-          Go to Scan
+          {t.nav.scan}
         </button>
       </div>
     );
@@ -775,30 +872,38 @@ function HistoryView({
   scans: ScanItem[];
   onSelectScan: (scan: ScanItem) => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="max-w-2xl mx-auto px-5 py-10 pb-24 md:pb-10">
-      <h1 className="text-2xl font-bold mb-1" style={{ color: C.ink, fontFamily: "Manrope" }}>Scan history</h1>
-      <p className="text-sm mb-6" style={{ color: C.inkSoft }}>A record of every crop leaf checked.</p>
-      <div className="rounded-xl border divide-y overflow-hidden shadow-sm" style={{ borderColor: C.sandDark, background: C.cream }}>
-        {scans.map((s) => (
-          <div
-            key={s.id}
-            onClick={() => onSelectScan(s)}
-            className="flex items-center justify-between px-4 py-4 hover:bg-slate-100/60 cursor-pointer transition-colors"
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <img src={s.imageUrl} alt={s.diseaseName} className="w-11 h-11 rounded-lg object-cover border border-sandDark shrink-0" />
-              <div className="min-w-0">
-                <p className="text-sm font-semibold truncate" style={{ color: C.ink }}>{s.cropName}</p>
-                <p className="text-xs" style={{ color: C.inkSoft }}>{s.diseaseName} · {new Date(s.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
+      <h1 className="text-2xl font-bold mb-1" style={{ color: C.ink, fontFamily: "Manrope" }}>{t.history.title}</h1>
+      <p className="text-sm mb-6" style={{ color: C.inkSoft }}>{t.history.subtitle}</p>
+      {scans.length === 0 ? (
+        <div className="p-8 text-center rounded-xl border border-sandDark bg-white/50 text-sm" style={{ color: C.inkSoft }}>
+          {t.history.noHistory}
+        </div>
+      ) : (
+        <div className="rounded-xl border divide-y overflow-hidden shadow-sm" style={{ borderColor: C.sandDark, background: C.cream }}>
+          {scans.map((s) => (
+            <div
+              key={s.id}
+              onClick={() => onSelectScan(s)}
+              className="flex items-center justify-between px-4 py-4 hover:bg-slate-100/60 cursor-pointer transition-colors"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <img src={s.imageUrl} alt={s.diseaseName} className="w-11 h-11 rounded-lg object-cover border border-sandDark shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold truncate" style={{ color: C.ink }}>{s.cropName}</p>
+                  <p className="text-xs" style={{ color: C.inkSoft }}>{s.diseaseName} · {new Date(s.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
+                </div>
               </div>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold border bg-emerald-500/10 text-emerald-600 border-emerald-500/30">
+                {s.confidenceLevel || 'High'} {t.dashboard.confidence}
+              </span>
             </div>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold border bg-emerald-500/10 text-emerald-600 border-emerald-500/30">
-              {s.confidenceLevel || 'High'} Confidence
-            </span>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -807,16 +912,58 @@ function HistoryView({
    ABOUT VIEW
 --------------------------------------------------------- */
 function AboutView() {
+  const { t } = useTranslation();
   const pipeline = ["Farmer Image", "Leaf Detection", "Leaf Segmentation", "Disease Classification", "Farmer Guidance"];
+
   return (
     <div className="max-w-3xl mx-auto px-5 py-10 pb-24 md:pb-10">
-      <h1 className="text-2xl font-bold mb-2" style={{ color: C.ink, fontFamily: "Manrope" }}>About AgriVision AI</h1>
+      <h1 className="text-2xl font-bold mb-2" style={{ color: C.ink, fontFamily: "Manrope" }}>{t.about.title}</h1>
       <p className="text-sm leading-relaxed mb-10" style={{ color: C.inkSoft }}>
-        AgriVision AI helps farmers identify crop disease early using computer vision,
-        so problems can be treated before they spread.
+        {t.about.desc}
       </p>
 
-      <h2 className="font-semibold mb-4" style={{ color: C.ink }}>How a scan works</h2>
+      <h2 className="font-semibold mb-3" style={{ color: C.ink }}>Crop Coverage & Roadmap</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-10">
+        {CROPS_DATA.map((crop) => {
+          const isSupported = crop.supported;
+          return (
+            <div
+              key={crop.id}
+              className={`p-3.5 rounded-xl border flex flex-col justify-between ${
+                isSupported ? "shadow-sm" : "border-dashed opacity-75"
+              }`}
+              style={{
+                borderColor: isSupported ? C.sandDark : "#cbd5e1",
+                background: isSupported ? C.cream : "#f8fafc"
+              }}
+            >
+              <div>
+                <div className="text-2xl mb-1">{crop.icon}</div>
+                <p className="text-sm font-bold" style={{ color: C.ink }}>
+                  {t.crops[crop.id as keyof typeof t.crops] || crop.name}
+                </p>
+                <p className="text-[11px] italic" style={{ color: C.olive }}>
+                  {crop.scientificName}
+                </p>
+              </div>
+
+              <div className="mt-3 pt-2 border-t flex items-center justify-between" style={{ borderColor: isSupported ? C.sandDark : "#e2e8f0" }}>
+                {isSupported ? (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: C.sand, color: C.forest }}>
+                    {crop.commonDiseasesCount} Diseases Active
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-bold text-amber-800 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    Coming Soon
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <h2 className="font-semibold mb-4" style={{ color: C.ink }}>{t.about.howScanWorks}</h2>
       <div className="flex flex-wrap items-center gap-2 mb-10">
         {pipeline.map((p, i) => (
           <React.Fragment key={p}>
@@ -826,7 +973,7 @@ function AboutView() {
         ))}
       </div>
 
-      <h2 className="font-semibold mb-3" style={{ color: C.ink }}>Methodology</h2>
+      <h2 className="font-semibold mb-3" style={{ color: C.ink }}>{t.about.methodology}</h2>
       <div className="grid sm:grid-cols-2 gap-4 mb-10">
         {[
           { t: "YOLO11", d: "Locates the leaf within the photo." },
@@ -841,12 +988,52 @@ function AboutView() {
         ))}
       </div>
 
-      <div className="p-5 rounded-xl border border-sandDark" style={{ background: C.sand }}>
-        <p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: C.olive }}>Research basis (IEEE Access 2025)</p>
+      <div className="p-5 rounded-xl border border-sandDark mb-6" style={{ background: C.sand }}>
+        <p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: C.olive }}>{t.about.researchBasis}</p>
         <p className="text-sm leading-relaxed" style={{ color: C.inkSoft }}>
-          "Hierarchical Multi-Stage Framework for Robust and Explainable Tomato Leaf Disease Identification." 
-          Built as an agricultural decision-support tool for smallholder farmers.
+          {t.about.researchDesc}
         </p>
+      </div>
+
+      <div className="p-6 rounded-2xl border shadow-sm" style={{ background: C.cream, borderColor: C.sandDark }}>
+        <div className="flex items-center gap-2 mb-2">
+          <FileText size={20} color={C.forest} />
+          <h2 className="font-bold text-base" style={{ color: C.ink }}>Official Project Report & Technical Specifications</h2>
+        </div>
+        <p className="text-xs leading-relaxed mb-4" style={{ color: C.inkSoft }}>
+          The complete 56-page B.Tech Capstone Academic Project Report submitted to APJ Abdul Kalam Technological University (KTU), detailing requirements, literature survey, 3-tier architecture, MobileNetV3/YOLO26 models, optical quality gating, and LIME explainability.
+        </p>
+
+        <div className="flex flex-wrap gap-3">
+          <a
+            href="/AgriVision_AI_Project_Report.pdf"
+            download="AgriVision_AI_Project_Report.pdf"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all hover:opacity-90"
+            style={{ background: C.forest, color: C.cream }}
+          >
+            <Download size={15} />
+            Download Capstone Report (PDF, 3.76 MB)
+          </a>
+          <a
+            href="/project_report.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold border transition-all hover:bg-amber-100/50"
+            style={{ borderColor: C.sandDark, color: C.ink, background: C.sand }}
+          >
+            <ExternalLink size={15} />
+            View Interactive A4 Report
+          </a>
+          <a
+            href="/AgriVision_AI_Implementation_Report.md"
+            download="AgriVision_AI_Implementation_Report.md"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold border transition-all hover:bg-stone-100"
+            style={{ borderColor: C.sandDark, color: C.inkSoft, background: "transparent" }}
+          >
+            <FileText size={15} />
+            Technical Spec (Markdown)
+          </a>
+        </div>
       </div>
     </div>
   );
@@ -855,7 +1042,7 @@ function AboutView() {
 /* ---------------------------------------------------------
    ROOT APPLICATION
 --------------------------------------------------------- */
-export default function AgriVisionAI() {
+function AgriVisionAppContent() {
   const [view, setView] = useState("home");
   const [selectedCropId, setSelectedCropId] = useState<CropId>("tomato");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -941,5 +1128,13 @@ export default function AgriVisionAI() {
 
       {view !== "analysis" && <BottomNav view={view} setView={setView} />}
     </div>
+  );
+}
+
+export default function AgriVisionAI() {
+  return (
+    <I18nProvider>
+      <AgriVisionAppContent />
+    </I18nProvider>
   );
 }

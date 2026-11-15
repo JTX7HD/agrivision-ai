@@ -4,10 +4,13 @@
  * using ImageNet mean [0.485, 0.456, 0.406] and std [0.229, 0.224, 0.225].
  */
 
+export type PreprocessNormalization = 'imagenet' | 'unit';
+
 export async function preprocessImageToTensor(
   imageDataUrl: string,
   targetWidth = 224,
-  targetHeight = 224
+  targetHeight = 224,
+  normalization: PreprocessNormalization = 'imagenet'
 ): Promise<Float32Array> {
   // Ensure external http/https URLs are fetched cleanly as Blobs to avoid CORS canvas tainting
   let safeDataUrl = imageDataUrl;
@@ -67,20 +70,28 @@ export async function preprocessImageToTensor(
         const numPixels = targetWidth * targetHeight;
         const floatArray = new Float32Array(3 * numPixels);
 
-        // ImageNet Normalization Constants
-        const mean = [0.485, 0.456, 0.406];
-        const std = [0.229, 0.224, 0.225];
-
         // Format into CHW (Channel, Height, Width) tensor layout
-        for (let i = 0; i < numPixels; i++) {
-          const r = data[i * 4] / 255.0;
-          const g = data[i * 4 + 1] / 255.0;
-          const b = data[i * 4 + 2] / 255.0;
+        if (normalization === 'unit') {
+          for (let i = 0; i < numPixels; i++) {
+            floatArray[i] = data[i * 4] / 255.0;                   // R channel
+            floatArray[numPixels + i] = data[i * 4 + 1] / 255.0;   // G channel
+            floatArray[numPixels * 2 + i] = data[i * 4 + 2] / 255.0;// B channel
+          }
+        } else {
+          // ImageNet Normalization Constants
+          const mean = [0.485, 0.456, 0.406];
+          const std = [0.229, 0.224, 0.225];
 
-          // Normalized CHW Float32 placement
-          floatArray[i] = (r - mean[0]) / std[0];                   // R channel
-          floatArray[numPixels + i] = (g - mean[1]) / std[1];       // G channel
-          floatArray[numPixels * 2 + i] = (b - mean[2]) / std[2];   // B channel
+          for (let i = 0; i < numPixels; i++) {
+            const r = data[i * 4] / 255.0;
+            const g = data[i * 4 + 1] / 255.0;
+            const b = data[i * 4 + 2] / 255.0;
+
+            // Normalized CHW Float32 placement
+            floatArray[i] = (r - mean[0]) / std[0];                   // R channel
+            floatArray[numPixels + i] = (g - mean[1]) / std[1];       // G channel
+            floatArray[numPixels * 2 + i] = (b - mean[2]) / std[2];   // B channel
+          }
         }
 
         resolve(floatArray);

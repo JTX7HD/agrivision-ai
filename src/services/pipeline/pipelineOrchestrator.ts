@@ -2,13 +2,15 @@ import type {
   FullAnalysisResult,
   PipelineStageStatus,
   DetectedLeafAnalysis,
-  LeafDetection
+  LeafDetection,
+  ImageQualityStatus
 } from '../../models/types';
 import { getCropById } from '../../data/cropsData';
 import { validateImageQuality } from '../onnx/imageQualityCheck';
 import { defaultLeafDetector } from './leafDetectionService';
 import { defaultLeafSegmenter } from './leafSegmentationService';
-import { defaultDiseaseClassifier, MOBILENETV3_V2_METADATA } from './diseaseClassifierService';
+import { defaultDiseaseClassifier } from './diseaseClassifierService';
+import { getCropClassifierAdapter } from './cropAdapters';
 import { defaultExplainabilityEngine } from '../explainability/limeExplainer';
 import type {
   ILeafDetector,
@@ -35,6 +37,7 @@ export class PipelineOrchestrator implements IPipelineOrchestrator {
   private segmenter: ILeafSegmenter = defaultLeafSegmenter;
   private classifier: IDiseaseClassifier = defaultDiseaseClassifier;
   private explainer: IExplainabilityEngine = defaultExplainabilityEngine;
+  private qualityValidator: (imageDataUrl: string) => Promise<ImageQualityStatus> = validateImageQuality;
 
   public setDetector(detector: ILeafDetector): void {
     this.detector = detector;
@@ -50,6 +53,10 @@ export class PipelineOrchestrator implements IPipelineOrchestrator {
 
   public setExplainer(explainer: IExplainabilityEngine): void {
     this.explainer = explainer;
+  }
+
+  public setQualityValidator(validator: (imageDataUrl: string) => Promise<ImageQualityStatus>): void {
+    this.qualityValidator = validator;
   }
 
   public async run(
@@ -69,19 +76,20 @@ export class PipelineOrchestrator implements IPipelineOrchestrator {
     const stageQuality: PipelineStageStatus = {
       id: 'quality',
       name: '1. Image Quality Inspection',
-      modelName: 'Luminance & Contrast Analyzer',
+      modelName: 'Luminance, Contrast & Blur Analyzer',
       description: 'Verifying lighting, focus, and leaf visibility...',
       status: 'running',
       durationMs: 120
     };
     onProgress?.(stageQuality);
 
-    const qualityCheck = await validateImageQuality(imageDataUrl);
+    const qualityCheck = await this.qualityValidator(imageDataUrl);
 
     if (!qualityCheck.isSuitable) {
       stageQuality.status = 'failed';
       stageQuality.outputSummary =
         qualityCheck.issueDescription || 'Image quality unsuitable for AI model evaluation.';
+      stages.push({ ...stageQuality });
       onProgress?.({ ...stageQuality });
       throw new Error(
         qualityCheck.issueDescription ||
@@ -90,7 +98,9 @@ export class PipelineOrchestrator implements IPipelineOrchestrator {
     }
 
     stageQuality.status = 'completed';
-    stageQuality.outputSummary = 'Image quality verified (Good lighting and leaf contrast).';
+    stageQuality.outputSummary = qualityCheck.blurScore !== undefined
+      ? `Image quality verified (Lighting: ${qualityCheck.brightness}, Contrast: ${qualityCheck.contrast}, Sharpness: ${qualityCheck.blurScore}).`
+      : 'Image quality verified (Good lighting, contrast, and leaf focus).';
     stages.push({ ...stageQuality });
     onProgress?.({ ...stageQuality });
 
@@ -108,26 +118,28 @@ export class PipelineOrchestrator implements IPipelineOrchestrator {
     onProgress?.(stageDetection);
 
     let detections: LeafDetection[] = [];
+
     try {
       detections = await this.detector.detectLeaves(imageDataUrl);
     } catch (err) {
       stageDetection.status = 'failed';
-      stageDetection.outputSummary = `YOLO leaf detection error: ${err instanceof Error ? err.message : String(err)}`;
+      const errMsg = err instanceof Error ? err.message : String(err);
+      stageDetection.outputSummary = `YOLO leaf detector error: ${errMsg}`;
+      stages.push({ ...stageDetection });
       onProgress?.({ ...stageDetection });
-      throw new Error(`YOLO Leaf Detection Failed: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error(`YOLO Leaf Detection Failed: ${errMsg}`);
     }
 
     if (!detections || detections.length === 0) {
       stageDetection.status = 'failed';
-      stageDetection.outputSummary = 'No leaf detected: YOLO11n did not detect any plant leaf in this photo (confidence threshold: 25%).';
+      const noLeafMessage = 'No plant leaf detected. Please take a clear, close-up photo of a plant leaf.';
+      stageDetection.outputSummary = noLeafMessage;
+      stages.push({ ...stageDetection });
       onProgress?.({ ...stageDetection });
-      throw new Error(
-        'No leaf detected: YOLO11n did not detect any plant leaf in this photo (confidence threshold: 25%). Please upload a clear photo of an affected leaf.'
-      );
+      throw new Error(noLeafMessage);
     }
 
     const primaryDetection = detections[0];
-
     stageDetection.status = 'completed';
     stageDetection.outputSummary = `Leaf detected with ${(primaryDetection.confidence * 100).toFixed(1)}% YOLO confidence (${detections.length} leaf ROI(s) found). Primary ROI cropped from original image.`;
     stages.push({ ...stageDetection });
@@ -149,21 +161,30 @@ export class PipelineOrchestrator implements IPipelineOrchestrator {
     const segmentation = await this.segmenter.segmentLeaf(imageDataUrl, primaryDetection);
 
     stageSegmentation.status = 'completed';
-    stageSegmentation.outputSummary = 'Leaf contour segmented successfully.';
+    if (segmentation.isRealSAM && segmentation.iou !== undefined) {
+      stageSegmentation.durationMs = segmentation.inferenceTimeMs || 90;
+      stageSegmentation.outputSummary = `MobileSAM isolated leaf contour (IoU: ${(segmentation.iou * 100).toFixed(1)}%, Area: ${((segmentation.areaRatio || 0.85) * 100).toFixed(1)}%).`;
+    } else {
+      stageSegmentation.outputSummary = 'Leaf contour segmented successfully (pass-through mode).';
+    }
     stages.push({ ...stageSegmentation });
     onProgress?.({ ...stageSegmentation });
 
     // -------------------------------------------------------------
     // Stage 4: Disease Classification (MobileNetV3 V2)
     // -------------------------------------------------------------
-    const targetLeafImage =
-      segmentation.isolatedLeafImageUrl || primaryDetection.croppedImageUrl || imageDataUrl;
+    // Strict Safety Boundary: Classifiers were trained on full leaf foliage with natural cardstock/field backgrounds.
+    // Passing tight bounding-box crops causes severe domain shift, lesion amputation, and double-cropping distortion.
+    // The full original image is preserved as classifier input to guarantee model accuracy,
+    // while YOLO leaf detections and SAM segmentation masks are preserved as diagnostic artifacts.
+    const targetLeafImage = imageDataUrl;
 
+    const adapter = getCropClassifierAdapter(cropId || 'tomato');
     const stageClassification: PipelineStageStatus = {
       id: 'onnx',
-      name: '4. MobileNetV3 Disease Classification',
-      modelName: `MobileNetV3 V2 (${this.classifier.modelIdentifier})`,
-      description: 'Evaluating ImageNet-normalized Float32 tensor [1, 3, 224, 224] via client-side WASM runtime...',
+      name: `4. ${adapter.modelInfo.modelName}`,
+      modelName: `${adapter.modelInfo.modelName} (${adapter.modelInfo.checkpoint})`,
+      description: `Evaluating ${cropId === 'tomato' ? 'ImageNet-normalized' : '[0, 1] normalized'} Float32 tensor [1, 3, 224, 224] via client-side WASM runtime...`,
       status: 'running',
       durationMs: 450
     };
@@ -174,7 +195,11 @@ export class PipelineOrchestrator implements IPipelineOrchestrator {
       classificationResult = await this.classifier.classify(targetLeafImage, cropId);
       stageClassification.durationMs = classificationResult.inferenceTimeMs;
       stageClassification.status = 'completed';
-      stageClassification.outputSummary = `Predicted ${classificationResult.disease.name} (${classificationResult.topConfidence}% confidence, ${classificationResult.confidenceLevel} confidence level).`;
+      if (classificationResult.uncertainty?.isUncertain) {
+        stageClassification.outputSummary = `Predicted ${classificationResult.disease.name} (${classificationResult.topConfidence}% confidence). Notice: ${classificationResult.uncertainty.warningMessage || 'Diagnosis is uncertain.'}`;
+      } else {
+        stageClassification.outputSummary = `Predicted ${classificationResult.disease.name} (${classificationResult.topConfidence}% confidence, ${classificationResult.confidenceLevel} confidence level).`;
+      }
     } catch (e) {
       console.error('Classification error:', e);
       stageClassification.status = 'failed';
@@ -219,6 +244,9 @@ export class PipelineOrchestrator implements IPipelineOrchestrator {
       className: classificationResult.predictedClassName,
       confidence: classificationResult.topConfidence,
       classProbabilities: classificationResult.classProbabilities,
+      secondPrediction: classificationResult.secondPrediction,
+      topMargin: classificationResult.topMargin,
+      uncertainty: classificationResult.uncertainty,
       explanation: limeExplanation
     };
 
@@ -240,19 +268,22 @@ export class PipelineOrchestrator implements IPipelineOrchestrator {
       confidenceLevel: classificationResult.confidenceLevel,
       confidenceLabel: classificationResult.confidenceLabel,
       classProbabilities: classificationResult.classProbabilities,
+      secondPrediction: classificationResult.secondPrediction,
+      topMargin: classificationResult.topMargin,
+      uncertainty: classificationResult.uncertainty,
       rawLogits: classificationResult.rawLogits,
       imageQuality: qualityCheck,
       isMockPrediction: false,
       detectedLeaves,
       primaryLeaf: primaryLeafAnalysis,
       explanation: limeExplanation,
-      classifierInfo: MOBILENETV3_V2_METADATA,
+      classifierInfo: adapter.modelInfo,
       onnxInfo: {
-        modelPath: '/models/tomato_mobilenetv3_v2.onnx',
+        modelPath: (adapter as any).expectedModelPath || '/models/tomato_mobilenetv3_v2.onnx',
         modelName: classificationResult.modelName,
-        fileSizeBytes: 17142352,
-        inputShape: [1, 3, 224, 224],
-        outputShape: [1, 10],
+        fileSizeBytes: cropId === 'potato' ? 21798793 : cropId === 'chilli' ? 6191953 : 17142352,
+        inputShape: adapter.modelInfo.inputShape,
+        outputShape: adapter.modelInfo.outputShape,
         executionProvider: 'ONNX Runtime WebAssembly (WASM)',
         inferenceTimeMs: classificationResult.inferenceTimeMs
       }

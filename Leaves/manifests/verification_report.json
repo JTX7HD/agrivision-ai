@@ -1,0 +1,152 @@
+{
+  "total_images": 217,
+  "by_crop": {
+    "tomato": {
+      "total": 106,
+      "correct": 92,
+      "accuracy_pct": 86.79
+    },
+    "potato": {
+      "total": 30,
+      "correct": 20,
+      "accuracy_pct": 66.67
+    },
+    "chilli": {
+      "total": 81,
+      "correct": 27,
+      "accuracy_pct": 33.33
+    }
+  },
+  "by_class": {
+    "Chili__Bacterial_Spot": {
+      "total": 10,
+      "correct": 1,
+      "accuracy_pct": 10.0
+    },
+    "Chili__Cercospora_Leaf_Spot": {
+      "total": 10,
+      "correct": 0,
+      "accuracy_pct": 0.0
+    },
+    "Chili__Curl_Virus": {
+      "total": 10,
+      "correct": 4,
+      "accuracy_pct": 40.0
+    },
+    "Chili__Healthy_Leaf": {
+      "total": 10,
+      "correct": 4,
+      "accuracy_pct": 40.0
+    },
+    "Chili__Nutrition_Deficiency": {
+      "total": 10,
+      "correct": 5,
+      "accuracy_pct": 50.0
+    },
+    "Chili__Powdery_Mildew": {
+      "total": 10,
+      "correct": 6,
+      "accuracy_pct": 60.0
+    },
+    "Chili__White_Spot": {
+      "total": 10,
+      "correct": 0,
+      "accuracy_pct": 0.0
+    },
+    "Others": {
+      "total": 11,
+      "correct": 7,
+      "accuracy_pct": 63.64
+    },
+    "Potato__Early_Blight": {
+      "total": 10,
+      "correct": 10,
+      "accuracy_pct": 100.0
+    },
+    "Potato__Healthy_Leaf": {
+      "total": 10,
+      "correct": 0,
+      "accuracy_pct": 0.0
+    },
+    "Potato__Late_Blight": {
+      "total": 10,
+      "correct": 10,
+      "accuracy_pct": 100.0
+    },
+    "Tomato___Bacterial_spot": {
+      "total": 10,
+      "correct": 10,
+      "accuracy_pct": 100.0
+    },
+    "Tomato___Early_blight": {
+      "total": 10,
+      "correct": 9,
+      "accuracy_pct": 90.0
+    },
+    "Tomato___Late_blight": {
+      "total": 12,
+      "correct": 11,
+      "accuracy_pct": 91.67
+    },
+    "Tomato___Leaf_Mold": {
+      "total": 10,
+      "correct": 8,
+      "accuracy_pct": 80.0
+    },
+    "Tomato___Septoria_leaf_spot": {
+      "total": 11,
+      "correct": 11,
+      "accuracy_pct": 100.0
+    },
+    "Tomato___Spider_mites Two-spotted_spider_mite": {
+      "total": 10,
+      "correct": 8,
+      "accuracy_pct": 80.0
+    },
+    "Tomato___Target_Spot": {
+      "total": 10,
+      "correct": 10,
+      "accuracy_pct": 100.0
+    },
+    "Tomato___Tomato_Yellow_Leaf_Curl_Virus": {
+      "total": 11,
+      "correct": 11,
+      "accuracy_pct": 100.0
+    },
+    "Tomato___Tomato_mosaic_virus": {
+      "total": 11,
+      "correct": 8,
+      "accuracy_pct": 72.73
+    },
+    "Tomato___healthy": {
+      "total": 11,
+      "correct": 6,
+      "accuracy_pct": 54.55
+    }
+  },
+  "overall_accuracy_pct": 64.06,
+  "licenses_represented": [
+    "Apache License 2.0",
+    "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+    "Open Academic Research (PlantDoc Dataset)",
+    "Open Agricultural Sample (KrishokTech / AgriVision AI)",
+    "Proprietary Project Asset (Internal Agronomic Archive)",
+    "Proprietary Project Asset (Internal Archive)"
+  ],
+  "source_datasets_represented": [
+    "AgriVision Demo Sample",
+    "AgriVision Field Feedback Archive",
+    "AgriVision Verified Field Feedback Archive",
+    "Anthracnose Disease in Chilli Plant Mobile Dataset (Prudhvi & Vishnu)",
+    "Chili Leaf Disease Dataset (Ulfa et al., 2024)",
+    "Chilli Leaf Disease Classification Dataset (Mendeley Data DOI 10.17632/tf9dtfz9m6.1)",
+    "KrishokTech Benchmark Anchor Split",
+    "KrishokTech Verified Pathology Suite",
+    "PlantDoc In-Field Split",
+    "PlantDoc In-Field Split (Singh et al., 2020)",
+    "PlantDoc In-Field Split (Singh et al., CoDS-COMAD 2020)",
+    "PlantVillage Anchor Split",
+    "PlantVillage Anchor Split (Hughes & Salath\u00e9, 2015)"
+  ],
+  "benchmark_protection_attestation": "Zero images evaluated from or added to data/benchmark/. All 163 held-out benchmark files remain strictly untouched."
+}

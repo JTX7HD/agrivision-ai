@@ -13,21 +13,21 @@ interface CameraScannerProps {
 const SAMPLE_LEAF_IMAGES = [
   {
     id: 'sample-1',
-    title: 'Tomato Leaf (Blight Spot)',
+    title: 'Tomato Leaf (Late Blight)',
     cropId: 'tomato',
-    url: 'https://images.unsplash.com/photo-1592841200221-a6898f307baa?auto=format&fit=crop&w=800&q=80'
+    url: '/samples/tomato_sample.jpg'
   },
   {
     id: 'sample-2',
-    title: 'Potato Leaf (Lesion)',
+    title: 'Potato Leaf (Early Blight)',
     cropId: 'potato',
-    url: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=800&q=80'
+    url: '/samples/potato_sample.jpg'
   },
   {
     id: 'sample-3',
-    title: 'Maize Leaf (Rust Rustles)',
-    cropId: 'maize',
-    url: 'https://images.unsplash.com/photo-1601593346740-925612772716?auto=format&fit=crop&w=800&q=80'
+    title: 'Chilli Leaf (Bacterial Spot)',
+    cropId: 'chilli',
+    url: '/samples/chilli_sample.jpg'
   }
 ];
 

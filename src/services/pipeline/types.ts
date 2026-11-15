@@ -49,7 +49,7 @@ export interface IDiseaseClassifier {
   classify(
     imageDataUrl: string,
     cropId: CropId,
-    options?: { modelPath?: string }
+    options?: { modelPath?: string; uncertaintyConfig?: import('../onnx/resultFormatter').ResultFormatterOptions }
   ): Promise<FormattedONNXResult>;
 }
 
@@ -85,5 +85,6 @@ export interface IPipelineOrchestrator {
   setSegmenter(segmenter: ILeafSegmenter): void;
   setClassifier(classifier: IDiseaseClassifier): void;
   setExplainer(explainer: IExplainabilityEngine): void;
+  setQualityValidator?(validator: (imageDataUrl: string) => Promise<ImageQualityStatus>): void;
   run(imageDataUrl: string, options: PipelineRunOptions): Promise<FullAnalysisResult>;
 }

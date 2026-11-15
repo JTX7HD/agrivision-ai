@@ -28,20 +28,29 @@ export const CropSelector: React.FC<CropSelectorProps> = ({ selectedCropId, onSe
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
         {CROPS_DATA.map((crop) => {
           const isSelected = selectedCropId === crop.id;
+          const isSupported = crop.supported;
           return (
             <button
               key={crop.id}
               type="button"
-              onClick={() => onSelectCrop(crop.id)}
-              className={`relative p-4 rounded-2xl text-left border-2 transition-all flex flex-col justify-between group active:scale-[0.98] ${
-                isSelected
-                  ? 'border-emerald-500 bg-emerald-500/10 dark:bg-emerald-950/40 ring-4 ring-emerald-500/20 shadow-md'
-                  : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700 shadow-sm'
+              disabled={!isSupported}
+              onClick={() => isSupported && onSelectCrop(crop.id)}
+              className={`relative p-4 rounded-2xl text-left border-2 transition-all flex flex-col justify-between group ${
+                !isSupported
+                  ? 'border-dashed border-slate-300 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 opacity-60 cursor-not-allowed'
+                  : isSelected
+                  ? 'border-emerald-500 bg-emerald-500/10 dark:bg-emerald-950/40 ring-4 ring-emerald-500/20 shadow-md active:scale-[0.98]'
+                  : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700 shadow-sm active:scale-[0.98]'
               }`}
             >
               {isSelected && (
                 <div className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center shadow-md">
                   <Check className="w-4 h-4 stroke-[3]" />
+                </div>
+              )}
+              {!isSupported && (
+                <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wide">
+                  Coming Soon
                 </div>
               )}
 
@@ -58,8 +67,10 @@ export const CropSelector: React.FC<CropSelectorProps> = ({ selectedCropId, onSe
               </div>
 
               <div className="mt-3 flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800/80">
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                  {crop.commonDiseasesCount} Diseases
+                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                  isSupported ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10' : 'text-slate-400 bg-slate-100 dark:bg-slate-800'
+                }`}>
+                  {isSupported ? `${crop.commonDiseasesCount} Diseases` : 'Model in Progress'}
                 </span>
                 {crop.id === 'tomato' && (
                   <span className="text-[9px] bg-amber-500/20 text-amber-600 dark:text-amber-300 px-1.5 py-0.5 rounded font-bold">

@@ -1,0 +1,222 @@
+{
+  "meta": {
+    "version": "1.1.0-validated",
+    "timestamp_utc": "2026-10-22T17:45:02.514079+00:00",
+    "validation_task": "Phase C, Task 3.6.1"
+  },
+  "dataset_splits": {
+    "field_train_total": 537,
+    "field_val_total": 135,
+    "anchor_train_total": 440,
+    "anchor_val_total": 120,
+    "combined_train_total": 977,
+    "combined_val_total": 255,
+    "benchmark_plantdoc_total": 63,
+    "benchmark_plantvillage_total": 100,
+    "benchmark_grand_total": 163
+  },
+  "class_breakdown": [
+    {
+      "class_index": 0,
+      "class_name": "Tomato___Bacterial_spot",
+      "display_name": "Tomato Bacterial Spot",
+      "field_train": 80,
+      "field_val": 20,
+      "anchor_train": 30,
+      "anchor_val": 10,
+      "total_train": 110,
+      "total_val": 30,
+      "benchmark_plantdoc": 7,
+      "benchmark_plantvillage": 10,
+      "benchmark_total": 17,
+      "validation_defensibility": "DUAL-DOMAIN VALIDATION (20 Field + 10 Lab)"
+    },
+    {
+      "class_index": 1,
+      "class_name": "Tomato___Early_blight",
+      "display_name": "Tomato Early Blight",
+      "field_train": 63,
+      "field_val": 16,
+      "anchor_train": 30,
+      "anchor_val": 10,
+      "total_train": 93,
+      "total_val": 26,
+      "benchmark_plantdoc": 9,
+      "benchmark_plantvillage": 10,
+      "benchmark_total": 19,
+      "validation_defensibility": "DUAL-DOMAIN VALIDATION (16 Field + 10 Lab)"
+    },
+    {
+      "class_index": 2,
+      "class_name": "Tomato___Late_blight",
+      "display_name": "Tomato Late Blight",
+      "field_train": 80,
+      "field_val": 20,
+      "anchor_train": 30,
+      "anchor_val": 10,
+      "total_train": 110,
+      "total_val": 30,
+      "benchmark_plantdoc": 9,
+      "benchmark_plantvillage": 10,
+      "benchmark_total": 19,
+      "validation_defensibility": "DUAL-DOMAIN VALIDATION (20 Field + 10 Lab)"
+    },
+    {
+      "class_index": 3,
+      "class_name": "Tomato___Leaf_Mold",
+      "display_name": "Tomato Leaf Mold",
+      "field_train": 68,
+      "field_val": 17,
+      "anchor_train": 30,
+      "anchor_val": 10,
+      "total_train": 98,
+      "total_val": 27,
+      "benchmark_plantdoc": 4,
+      "benchmark_plantvillage": 10,
+      "benchmark_total": 14,
+      "validation_defensibility": "DUAL-DOMAIN VALIDATION (17 Field + 10 Lab)"
+    },
+    {
+      "class_index": 4,
+      "class_name": "Tomato___Septoria_leaf_spot",
+      "display_name": "Tomato Septoria Leaf Spot",
+      "field_train": 110,
+      "field_val": 28,
+      "anchor_train": 30,
+      "anchor_val": 10,
+      "total_train": 140,
+      "total_val": 38,
+      "benchmark_plantdoc": 11,
+      "benchmark_plantvillage": 10,
+      "benchmark_total": 21,
+      "validation_defensibility": "DUAL-DOMAIN VALIDATION (28 Field + 10 Lab)"
+    },
+    {
+      "class_index": 5,
+      "class_name": "Tomato___Spider_mites Two-spotted_spider_mite",
+      "display_name": "Two-Spotted Spider Mite",
+      "field_train": 2,
+      "field_val": 0,
+      "anchor_train": 100,
+      "anchor_val": 20,
+      "total_train": 102,
+      "total_val": 20,
+      "benchmark_plantdoc": 0,
+      "benchmark_plantvillage": 10,
+      "benchmark_total": 10,
+      "validation_defensibility": "LAB-ONLY VALIDATION (20 Lab, 0 Field)"
+    },
+    {
+      "class_index": 6,
+      "class_name": "Tomato___Target_Spot",
+      "display_name": "Tomato Target Spot",
+      "field_train": 0,
+      "field_val": 0,
+      "anchor_train": 100,
+      "anchor_val": 20,
+      "total_train": 100,
+      "total_val": 20,
+      "benchmark_plantdoc": 0,
+      "benchmark_plantvillage": 10,
+      "benchmark_total": 10,
+      "validation_defensibility": "LAB-ONLY VALIDATION (20 Lab, 0 Field)"
+    },
+    {
+      "class_index": 7,
+      "class_name": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+      "display_name": "Tomato Yellow Leaf Curl",
+      "field_train": 55,
+      "field_val": 14,
+      "anchor_train": 30,
+      "anchor_val": 10,
+      "total_train": 85,
+      "total_val": 24,
+      "benchmark_plantdoc": 6,
+      "benchmark_plantvillage": 10,
+      "benchmark_total": 16,
+      "validation_defensibility": "DUAL-DOMAIN VALIDATION (14 Field + 10 Lab)"
+    },
+    {
+      "class_index": 8,
+      "class_name": "Tomato___Tomato_mosaic_virus",
+      "display_name": "Tomato Mosaic Virus",
+      "field_train": 35,
+      "field_val": 9,
+      "anchor_train": 30,
+      "anchor_val": 10,
+      "total_train": 65,
+      "total_val": 19,
+      "benchmark_plantdoc": 9,
+      "benchmark_plantvillage": 10,
+      "benchmark_total": 19,
+      "validation_defensibility": "DUAL-DOMAIN VALIDATION (9 Field + 10 Lab)"
+    },
+    {
+      "class_index": 9,
+      "class_name": "Tomato___healthy",
+      "display_name": "Healthy Tomato",
+      "field_train": 44,
+      "field_val": 11,
+      "anchor_train": 30,
+      "anchor_val": 10,
+      "total_train": 74,
+      "total_val": 21,
+      "benchmark_plantdoc": 8,
+      "benchmark_plantvillage": 10,
+      "benchmark_total": 18,
+      "validation_defensibility": "DUAL-DOMAIN VALIDATION (11 Field + 10 Lab)"
+    }
+  ],
+  "model_compatibility": {
+    "checkpoint_path": "C:\\Users\\joel tom\\.gemini\\antigravity-ide\\scratch\\agrivision-ai\\training_artifacts\\baseline_tomato_mobilenetv3_v2.pth",
+    "checkpoint_sha256": "3c4b7ffad883f88b065e9e1e67bad3f875ab3b48cf9be5b2e4f324318287a771",
+    "architecture": "MobileNetV3_Large",
+    "fused_conv_bn": true,
+    "num_output_classes": 10,
+    "in_features": 1280,
+    "class_order_exact_match": true,
+    "class_order": [
+      "Tomato___Bacterial_spot",
+      "Tomato___Early_blight",
+      "Tomato___Late_blight",
+      "Tomato___Leaf_Mold",
+      "Tomato___Septoria_leaf_spot",
+      "Tomato___Spider_mites Two-spotted_spider_mite",
+      "Tomato___Target_Spot",
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+      "Tomato___Tomato_mosaic_virus",
+      "Tomato___healthy"
+    ],
+    "reproducibility_risks": [
+      "FUSED_BATCHNORM_RISK: Checkpoint has fused BatchNorm layers (Identity modules with Conv2D bias=True). Fine-tuning scripts must use convert_to_fused() or recreate standard BatchNorm if updating running stats.",
+      "SPIDER_MITES_GRADIENT_RISK: PlantDoc has only 2 field images for Spider Mites. Training relies entirely on 100 PlantVillage anchor images. Field generalization for Spider Mites cannot be assessed independently on field data.",
+      "TARGET_SPOT_ZERO_FIELD_RISK: Target Spot has 0 field images in PlantDoc. Its weights rely 100% on laboratory anchor images; real field Target Spot performance cannot be measured until field photos are acquired.",
+      "ANNOTATION_CONFLICT_RISK: PlantDoc image tomato_V8 was quarantined due to being labeled Septoria in train and Bacterial Spot in test."
+    ]
+  },
+  "training_strategy": {
+    "loss": "Class-Weighted Cross-Entropy (effective sample weighting)",
+    "optimizer": "AdamW",
+    "stage_1_warmup": {
+      "epochs": 5,
+      "backbone_frozen": true,
+      "lr": 0.001,
+      "weight_decay": 0.0001
+    },
+    "stage_2_finetune": {
+      "epochs": 15,
+      "unfrozen_blocks": "features.13 to features.16",
+      "lr_backbone": 1e-05,
+      "lr_head": 0.0001,
+      "scheduler": "CosineAnnealingLR"
+    },
+    "validation_strategy": {
+      "internal_val_metric": "combined_val_macro_f1",
+      "field_val_samples": 135,
+      "anchor_val_samples": 120,
+      "field_val_coverage": "8 of 10 classes (Classes 0,1,2,3,4,7,8,9)",
+      "lab_val_coverage": "All 10 classes (Classes 0-9)",
+      "air_gapped_benchmark": "data/benchmark/ (163 images evaluated once as final test gate)"
+    }
+  }
+}

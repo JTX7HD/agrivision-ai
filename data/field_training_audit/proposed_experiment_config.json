@@ -1,0 +1,120 @@
+{
+  "experiment_plan": "AgriVision AI Phase C Task 3.6 — Field Domain Adaptation Proposal",
+  "version": "1.0.0",
+  "status": "PROPOSED_AWAITING_REVIEW",
+  "objective": "Domain-adapt MobileNetV3 tomato disease classifier from laboratory conditions to authentic field photography while preventing catastrophic forgetting of under-represented classes and preserving diagnostic safety.",
+  "models": {
+    "base_checkpoint": {
+      "path": "training_artifacts/baseline_tomato_mobilenetv3_v2.pth",
+      "architecture": "MobileNetV3_Large",
+      "fused_conv_bn": true,
+      "num_classes": 10,
+      "sha256": "3cb07ba7fce87e07b5a1db51f280e8e9079555eb3f769f37a54f0a9fbe4a87ad"
+    },
+    "production_onnx_reference": {
+      "path": "public/models/tomato_mobilenetv3_v2.onnx",
+      "sha256": "c1b55ccfa1dba3212649880a303d30019d4a4b1fa33fc4b822264297a06c5ab5",
+      "status": "STRICTLY_READ_ONLY_UNMODIFIED"
+    }
+  },
+  "training_pool": {
+    "source": "PlantDoc Official Classification Dataset (train split)",
+    "license": "CC BY 4.0",
+    "total_extracted_raw": 677,
+    "total_corrupted": 0,
+    "leakage_excluded_count": 5,
+    "clean_usable_field_candidates": 672,
+    "exclusion_manifest": "data/field_training_audit/benchmark_exclusion_list.json"
+  },
+  "splits_isolation": {
+    "strategy": "Stratified random split (80% train, 20% validation) isolated from final benchmark",
+    "train_set_size": 538,
+    "val_set_size": 134,
+    "random_seed": 42,
+    "final_benchmark_isolation": "163-image benchmark (data/benchmark/) is NEVER accessed during training, validation, or hyperparameter selection"
+  },
+  "plantvillage_anchor_set": {
+    "justification": "PlantDoc contains 0 samples for Target Spot and only 2 samples for Spider Mites. An anchor set prevents catastrophic forgetting of these two classes and preserves laboratory top-1 accuracy (97.0%).",
+    "source": "PlantVillage Tomato Dataset (isolated from the 100 benchmark images)",
+    "allocation": {
+      "classes_0_1_2_3_4_7_8_9": "30 anchor samples per class",
+      "class_5_spider_mites": "100 anchor samples (compensates for PlantDoc n=2)",
+      "class_6_target_spot": "100 anchor samples (compensates for PlantDoc n=0)"
+    },
+    "total_anchor_samples": 440
+  },
+  "class_imbalance_handling": {
+    "loss_function": "Class-Weighted CrossEntropyLoss",
+    "weight_formula": "w_c = 1.0 / sqrt(N_c + eps)",
+    "sampler": "StratifiedWeightedRandomSampler",
+    "batch_size": 16
+  },
+  "data_augmentation": {
+    "spatial_transforms": {
+      "resize": [224, 224],
+      "random_horizontal_flip_prob": 0.5,
+      "random_rotation_degrees": 15
+    },
+    "photometric_transforms": {
+      "color_jitter": {
+        "brightness": 0.15,
+        "contrast": 0.15,
+        "saturation": 0.1,
+        "hue": 0.02
+      },
+      "comment": "Hue jitter is kept minimal (+-0.02) to avoid corrupting diagnostic chlorotic and necrotic lesion colors"
+    },
+    "prohibited_augmentations": [
+      "RandomInvert",
+      "LargeCutout / RandomErasing > 10% (destroys small punctate lesions like Bacterial Spot or Septoria)",
+      "ExtremeHueShift"
+    ],
+    "normalization": {
+      "mean": [0.485, 0.456, 0.406],
+      "std": [0.229, 0.224, 0.225]
+    }
+  },
+  "optimization": {
+    "stage_1_warmup": {
+      "description": "Backbone frozen, train classifier head only",
+      "epochs": 5,
+      "optimizer": "AdamW",
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001
+    },
+    "stage_2_fine_tuning": {
+      "description": "Unfreeze top 4 inverted residual blocks (features 13 to 16)",
+      "epochs": 15,
+      "optimizer": "AdamW",
+      "learning_rate_backbone": 0.00001,
+      "learning_rate_head": 0.0001,
+      "lr_scheduler": "CosineAnnealingLR (T_max=15, eta_min=1e-6)",
+      "early_stopping_patience": 4,
+      "early_stopping_metric": "val_macro_f1"
+    }
+  },
+  "acceptance_gates": {
+    "internal_validation_gate": {
+      "min_val_macro_f1": 0.65,
+      "max_pv_anchor_accuracy_drop_pp": 1.5
+    },
+    "parity_gate": {
+      "onnx_export_opset": 17,
+      "max_absolute_logit_difference": 0.0001,
+      "input_shape": [1, 3, 224, 224],
+      "output_shape": [1, 10]
+    },
+    "final_benchmark_guard": {
+      "eval_timing": "Single pass evaluation on the 163-image benchmark only AFTER passing internal gates",
+      "plantdoc_min_accuracy_pp": 55.0,
+      "plantvillage_min_accuracy_pp": 95.0,
+      "healthy_plantdoc_min_recall_pp": 37.5
+    }
+  },
+  "benchmark_sample_size_caveats": {
+    "total_benchmark_images": 163,
+    "plantdoc_benchmark_size": 63,
+    "single_sample_weight_plantdoc_pp": 1.587,
+    "statistical_interpretation": "Due to N=63 on PlantDoc, a 95% Wilson score confidence interval spans approximately +-6 to 12 percentage points. Benchmark results are diagnostic and must be reported with exact counts (k/N) alongside confidence intervals."
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "description": "Images from PlantDoc train split that must be strictly excluded from fine-tuning to prevent data leakage into the 163-image benchmark.",
+  "total_excluded": 5,
+  "excluded_relative_paths": [
+    "data/field_training_audit/plantdoc_train_raw/Tomato Septoria leaf spot/early-blight-septoria-ls-fig-3.jpg",
+    "data/field_training_audit/plantdoc_train_raw/Tomato Septoria leaf spot/tomato_V8.jpg",
+    "data/field_training_audit/plantdoc_train_raw/Tomato leaf bacterial spot/bacterial-canker3x2400-2ia1kgd.jpg",
+    "data/field_training_audit/plantdoc_train_raw/Tomato leaf late blight/late_blight1.jpg",
+    "data/field_training_audit/plantdoc_train_raw/Tomato leaf yellow virus/tylcv-seminar-1-638.jpg"
+  ],
+  "exact_duplicates": [
+    {
+      "train_item": "early-blight-septoria-ls-fig-3.jpg",
+      "train_path": "data/field_training_audit/plantdoc_train_raw/Tomato Septoria leaf spot/early-blight-septoria-ls-fig-3.jpg",
+      "train_class": "Tomato___Septoria_leaf_spot",
+      "benchmark_id": "plantdoc-test-4-early-blight-septoria-ls-fig-3",
+      "benchmark_path": "data/benchmark/plantdoc_test/Tomato Septoria leaf spot/early-blight-septoria-ls-fig-3.jpg",
+      "benchmark_class": "Tomato___Septoria_leaf_spot",
+      "sha256": "93c989d8551209bf34d4002ee9fae48ddbf6ab66fc3c27466c0473bcc7c0a2b7",
+      "reason": "EXACT_SHA256_MATCH"
+    },
+    {
+      "train_item": "tomato_V8.jpg",
+      "train_path": "data/field_training_audit/plantdoc_train_raw/Tomato Septoria leaf spot/tomato_V8.jpg",
+      "train_class": "Tomato___Septoria_leaf_spot",
+      "benchmark_id": "plantdoc-test-0-tomato_V8",
+      "benchmark_path": "data/benchmark/plantdoc_test/Tomato leaf bacterial spot/tomato_V8.jpg",
+      "benchmark_class": "Tomato___Bacterial_spot",
+      "sha256": "e23a29c94b58aac28e92f57f95eb6f53e99c874323cb2b90ebd327085721574e",
+      "reason": "EXACT_SHA256_MATCH"
+    },
+    {
+      "train_item": "tylcv-seminar-1-638.jpg",
+      "train_path": "data/field_training_audit/plantdoc_train_raw/Tomato leaf yellow virus/tylcv-seminar-1-638.jpg",
+      "train_class": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+      "benchmark_id": "plantdoc-test-7-tylcv-seminar-1-638",
+      "benchmark_path": "data/benchmark/plantdoc_test/Tomato leaf yellow virus/tylcv-seminar-1-638.jpg",
+      "benchmark_class": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+      "sha256": "3c52144e19e95cc3d4170407eaf729d0981b934615eaa183f7f5aa29d8ef265a",
+      "reason": "EXACT_SHA256_MATCH"
+    }
+  ],
+  "flagged_near_duplicates_for_review": [
+    {
+      "train_item": "early-blight-septoria-ls-fig-3.jpg",
+      "train_path": "data/field_training_audit/plantdoc_train_raw/Tomato Septoria leaf spot/early-blight-septoria-ls-fig-3.jpg",
+      "train_class": "Tomato___Septoria_leaf_spot",
+      "benchmark_id": "plantdoc-test-4-early-blight-septoria-ls-fig-3",
+      "benchmark_path": "data/benchmark/plantdoc_test/Tomato Septoria leaf spot/early-blight-septoria-ls-fig-3.jpg",
+      "benchmark_class": "Tomato___Septoria_leaf_spot",
+      "phash_hamming_distance": 0,
+      "dhash_hamming_distance": 0,
+      "exact_sha256_match": true,
+      "verdict": "CONFIRMED_DUPLICATE"
+    },
+    {
+      "train_item": "tomato_V8.jpg",
+      "train_path": "data/field_training_audit/plantdoc_train_raw/Tomato Septoria leaf spot/tomato_V8.jpg",
+      "train_class": "Tomato___Septoria_leaf_spot",
+      "benchmark_id": "plantdoc-test-0-tomato_V8",
+      "benchmark_path": "data/benchmark/plantdoc_test/Tomato leaf bacterial spot/tomato_V8.jpg",
+      "benchmark_class": "Tomato___Bacterial_spot",
+      "phash_hamming_distance": 0,
+      "dhash_hamming_distance": 0,
+      "exact_sha256_match": true,
+      "verdict": "CONFIRMED_DUPLICATE"
+    },
+    {
+      "train_item": "bacterial-canker3x2400-2ia1kgd.jpg",
+      "train_path": "data/field_training_audit/plantdoc_train_raw/Tomato leaf bacterial spot/bacterial-canker3x2400-2ia1kgd.jpg",
+      "train_class": "Tomato___Bacterial_spot",
+      "benchmark_id": "plantdoc-test-0-07.17.18-Common_Tomato_Diseases_Canker-258x300",
+      "benchmark_path": "data/benchmark/plantdoc_test/Tomato leaf bacterial spot/07.17.18-Common_Tomato_Diseases_Canker-258x300.jpg",
+      "benchmark_class": "Tomato___Bacterial_spot",
+      "phash_hamming_distance": 0,
+      "dhash_hamming_distance": 0,
+      "exact_sha256_match": false,
+      "verdict": "CONFIRMED_DUPLICATE"
+    },
+    {
+      "train_item": "late_blight1.jpg",
+      "train_path": "data/field_training_audit/plantdoc_train_raw/Tomato leaf late blight/late_blight1.jpg",
+      "train_class": "Tomato___Late_blight",
+      "benchmark_id": "plantdoc-test-2-18c",
+      "benchmark_path": "data/benchmark/plantdoc_test/Tomato leaf late blight/18c.jpg",
+      "benchmark_class": "Tomato___Late_blight",
+      "phash_hamming_distance": 0,
+      "dhash_hamming_distance": 0,
+      "exact_sha256_match": false,
+      "verdict": "CONFIRMED_DUPLICATE"
+    },
+    {
+      "train_item": "tylcv-seminar-1-638.jpg",
+      "train_path": "data/field_training_audit/plantdoc_train_raw/Tomato leaf yellow virus/tylcv-seminar-1-638.jpg",
+      "train_class": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+      "benchmark_id": "plantdoc-test-7-tylcv-seminar-1-638",
+      "benchmark_path": "data/benchmark/plantdoc_test/Tomato leaf yellow virus/tylcv-seminar-1-638.jpg",
+      "benchmark_class": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+      "phash_hamming_distance": 0,
+      "dhash_hamming_distance": 0,
+      "exact_sha256_match": true,
+      "verdict": "CONFIRMED_DUPLICATE"
+    }
+  ]
+}

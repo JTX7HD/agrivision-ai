@@ -1,10 +1,11 @@
 import type { CropId, ClassifierModelInfo } from '../../models/types';
-import type { FormattedONNXResult } from '../onnx/resultFormatter';
+import type { FormattedONNXResult, ResultFormatterOptions } from '../onnx/resultFormatter';
 import { runONNXInference } from '../onnx/inferenceEngine';
 import type { IDiseaseClassifier } from './types';
+import { getCropClassifierAdapter, TomatoClassifierAdapter } from './cropAdapters';
 
 /**
- * Baseline Production Candidate Classifier: MobileNetV3 V2
+ * Baseline Production Candidate Classifier: MobileNetV3 V2 (Tomato)
  * Checkpoint: best_tomato_mobilenetv3_v2.pth
  * Benchmark Evaluations:
  * - PlantVillage test accuracy: 99.56%
@@ -22,22 +23,39 @@ export const MOBILENETV3_V2_METADATA: ClassifierModelInfo = {
   outputShape: [1, 10]
 };
 
-export class MobileNetV3Classifier implements IDiseaseClassifier {
-  public readonly name = 'MobileNetV3 V2 Disease Classification';
+export class MultiCropDiseaseClassifier implements IDiseaseClassifier {
+  public readonly name = 'Multi-Crop Disease Classification Engine';
   public readonly modelIdentifier = 'best_tomato_mobilenetv3_v2.pth';
   public readonly modelInfo: ClassifierModelInfo = MOBILENETV3_V2_METADATA;
 
+  private tomatoAdapter = new TomatoClassifierAdapter();
+
   public async classify(
     imageDataUrl: string,
-    _cropId: CropId,
-    options?: { modelPath?: string }
+    cropId: CropId,
+    options?: { modelPath?: string; uncertaintyConfig?: ResultFormatterOptions }
   ): Promise<FormattedONNXResult> {
-    const modelPath = options?.modelPath || '/models/tomato_mobilenetv3_v2.onnx';
-    return await runONNXInference(imageDataUrl, modelPath);
+    // Tomato retains 100% backwards-compatible baseline pipeline
+    if (cropId === 'tomato' || !cropId) {
+      if (options?.modelPath) {
+        return await runONNXInference(imageDataUrl, options.modelPath, options.uncertaintyConfig);
+      }
+      return await this.tomatoAdapter.classify(imageDataUrl, options?.uncertaintyConfig);
+    }
+
+    // Isolated crop routing: Dispatch strictly to dedicated crop adapter
+    // Prohibits cross-routing non-tomato foliage to tomato classifier
+    const adapter = getCropClassifierAdapter(cropId);
+    return await adapter.classify(imageDataUrl, options?.uncertaintyConfig);
   }
 }
 
 /**
- * Singleton instance of baseline classifier
+ * Backward compatibility alias
  */
-export const defaultDiseaseClassifier = new MobileNetV3Classifier();
+export const MobileNetV3Classifier = MultiCropDiseaseClassifier;
+
+/**
+ * Singleton instance of classifier engine
+ */
+export const defaultDiseaseClassifier = new MultiCropDiseaseClassifier();

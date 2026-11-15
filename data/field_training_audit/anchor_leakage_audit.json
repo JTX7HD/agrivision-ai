@@ -1,0 +1,12 @@
+{
+  "meta": {
+    "timestamp_utc": "2026-10-22T17:45:02.514079+00:00",
+    "total_anchors_evaluated": 560,
+    "benchmark_plantvillage_size": 100,
+    "benchmark_plantdoc_size": 63
+  },
+  "exact_benchmark_leaks": [],
+  "near_benchmark_leaks": [],
+  "field_dataset_collisions": [],
+  "zero_leakage_confirmed": true
+}

@@ -1,0 +1,1016 @@
+{
+  "meta": {
+    "script_version": "1.0.0",
+    "timestamp_start_utc": "2026-10-22T15:46:21.680250+00:00",
+    "timestamp_end_utc": "2026-10-22T15:46:25.913376+00:00",
+    "evaluation_duration_seconds": 4.01,
+    "model_evaluated": "tomato_mobilenetv3_v2.onnx",
+    "model_sha256": "c1b55ccfa1dba3212649880a303d30019d4a4b1fa33fc4b822264297a06c5ab5",
+    "yolo_companion_sha256": "37705fad0ad6248399d770be80c2425e3114d30ea235f565172beb974cc1cac1",
+    "manifest_sha256": "ee7a9fa25b6482a8181f7373f7ee3e548a6d129cc7655039d8085a6efd474963",
+    "hashes_verified_unchanged": true,
+    "preprocessing_configuration": {
+      "resize_method": "aspect_preserving_center_crop",
+      "target_width": 224,
+      "target_height": 224,
+      "interpolation": "BILINEAR",
+      "channel_order": "RGB",
+      "normalization_mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "normalization_std": [
+        0.229,
+        0.224,
+        0.225
+      ],
+      "tensor_layout": "NCHW [1, 3, 224, 224]"
+    },
+    "classes": [
+      {
+        "index": 0,
+        "className": "Tomato___Bacterial_spot",
+        "displayName": "Tomato Bacterial Spot"
+      },
+      {
+        "index": 1,
+        "className": "Tomato___Early_blight",
+        "displayName": "Tomato Early Blight"
+      },
+      {
+        "index": 2,
+        "className": "Tomato___Late_blight",
+        "displayName": "Tomato Late Blight"
+      },
+      {
+        "index": 3,
+        "className": "Tomato___Leaf_Mold",
+        "displayName": "Tomato Leaf Mold"
+      },
+      {
+        "index": 4,
+        "className": "Tomato___Septoria_leaf_spot",
+        "displayName": "Tomato Septoria Leaf Spot"
+      },
+      {
+        "index": 5,
+        "className": "Tomato___Spider_mites Two-spotted_spider_mite",
+        "displayName": "Two-Spotted Spider Mite"
+      },
+      {
+        "index": 6,
+        "className": "Tomato___Target_Spot",
+        "displayName": "Tomato Target Spot"
+      },
+      {
+        "index": 7,
+        "className": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+        "displayName": "Tomato Yellow Leaf Curl"
+      },
+      {
+        "index": 8,
+        "className": "Tomato___Tomato_mosaic_virus",
+        "displayName": "Tomato Mosaic Virus"
+      },
+      {
+        "index": 9,
+        "className": "Tomato___healthy",
+        "displayName": "Healthy Tomato"
+      }
+    ],
+    "uncertainty_rules": {
+      "confidence_threshold_percent": 60.0,
+      "margin_threshold_pp": 10.0
+    }
+  },
+  "datasets": {
+    "PlantVillage": {
+      "manifest_entries": 100,
+      "usable_images": 100,
+      "evaluated_images": 100,
+      "exclusions": [],
+      "exclusion_count": 0,
+      "top1_accuracy_percent": 100.0,
+      "top1_correct_count": 100,
+      "top2_accuracy_percent": 100.0,
+      "top2_correct_count": 100,
+      "per_class_metrics": [
+        {
+          "class_index": 0,
+          "class_name": "Tomato___Bacterial_spot",
+          "display_name": "Tomato Bacterial Spot",
+          "support": 10,
+          "true_positives": 10,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision_percent": 100.0,
+          "recall_percent": 100.0,
+          "f1_score_percent": 100.0,
+          "note": null
+        },
+        {
+          "class_index": 1,
+          "class_name": "Tomato___Early_blight",
+          "display_name": "Tomato Early Blight",
+          "support": 10,
+          "true_positives": 10,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision_percent": 100.0,
+          "recall_percent": 100.0,
+          "f1_score_percent": 100.0,
+          "note": null
+        },
+        {
+          "class_index": 2,
+          "class_name": "Tomato___Late_blight",
+          "display_name": "Tomato Late Blight",
+          "support": 10,
+          "true_positives": 10,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision_percent": 100.0,
+          "recall_percent": 100.0,
+          "f1_score_percent": 100.0,
+          "note": null
+        },
+        {
+          "class_index": 3,
+          "class_name": "Tomato___Leaf_Mold",
+          "display_name": "Tomato Leaf Mold",
+          "support": 10,
+          "true_positives": 10,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision_percent": 100.0,
+          "recall_percent": 100.0,
+          "f1_score_percent": 100.0,
+          "note": null
+        },
+        {
+          "class_index": 4,
+          "class_name": "Tomato___Septoria_leaf_spot",
+          "display_name": "Tomato Septoria Leaf Spot",
+          "support": 10,
+          "true_positives": 10,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision_percent": 100.0,
+          "recall_percent": 100.0,
+          "f1_score_percent": 100.0,
+          "note": null
+        },
+        {
+          "class_index": 5,
+          "class_name": "Tomato___Spider_mites Two-spotted_spider_mite",
+          "display_name": "Two-Spotted Spider Mite",
+          "support": 10,
+          "true_positives": 10,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision_percent": 100.0,
+          "recall_percent": 100.0,
+          "f1_score_percent": 100.0,
+          "note": null
+        },
+        {
+          "class_index": 6,
+          "class_name": "Tomato___Target_Spot",
+          "display_name": "Tomato Target Spot",
+          "support": 10,
+          "true_positives": 10,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision_percent": 100.0,
+          "recall_percent": 100.0,
+          "f1_score_percent": 100.0,
+          "note": null
+        },
+        {
+          "class_index": 7,
+          "class_name": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+          "display_name": "Tomato Yellow Leaf Curl",
+          "support": 10,
+          "true_positives": 10,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision_percent": 100.0,
+          "recall_percent": 100.0,
+          "f1_score_percent": 100.0,
+          "note": null
+        },
+        {
+          "class_index": 8,
+          "class_name": "Tomato___Tomato_mosaic_virus",
+          "display_name": "Tomato Mosaic Virus",
+          "support": 10,
+          "true_positives": 10,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision_percent": 100.0,
+          "recall_percent": 100.0,
+          "f1_score_percent": 100.0,
+          "note": null
+        },
+        {
+          "class_index": 9,
+          "class_name": "Tomato___healthy",
+          "display_name": "Healthy Tomato",
+          "support": 10,
+          "true_positives": 10,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision_percent": 100.0,
+          "recall_percent": 100.0,
+          "f1_score_percent": 100.0,
+          "note": null
+        }
+      ],
+      "confusion_matrix": [
+        [
+          10,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          10,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          10,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          10,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          10,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          10,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          10,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          10,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          10
+        ]
+      ],
+      "confidence_statistics": {
+        "correct_predictions": {
+          "count": 100,
+          "mean_percent": 99.63,
+          "std_percent": 3.24,
+          "min_percent": 67.5,
+          "max_percent": 100.0
+        },
+        "incorrect_predictions": {
+          "count": 0,
+          "mean_percent": null,
+          "std_percent": null,
+          "min_percent": null,
+          "max_percent": null
+        }
+      },
+      "uncertainty_evaluation": {
+        "rules": {
+          "confidence_threshold_percent": 60.0,
+          "margin_threshold_pp": 10.0
+        },
+        "flagged_count": 0,
+        "flagged_percent": 0.0,
+        "flag_breakdown": {
+          "weak_confidence_count": 0,
+          "ambiguous_margin_count": 0,
+          "both_reasons_count": 0,
+          "weak_confidence_only_count": 0,
+          "ambiguous_margin_only_count": 0
+        },
+        "error_interception_contingency": {
+          "true_positives_error_caught": 0,
+          "false_positives_false_alarm": 0,
+          "false_negatives_silent_error": 0,
+          "true_negatives_clean_correct": 100,
+          "error_interception_rate_percent": null
+        },
+        "clean_subset_performance": {
+          "sample_count": 100,
+          "percentage_of_dataset": 100.0,
+          "correct_count": 100,
+          "accuracy_percent": 100.0
+        }
+      }
+    },
+    "PlantDoc": {
+      "manifest_entries": 63,
+      "usable_images": 63,
+      "evaluated_images": 63,
+      "exclusions": [],
+      "exclusion_count": 0,
+      "top1_accuracy_percent": 46.03,
+      "top1_correct_count": 29,
+      "top2_accuracy_percent": 63.49,
+      "top2_correct_count": 40,
+      "per_class_metrics": [
+        {
+          "class_index": 0,
+          "class_name": "Tomato___Bacterial_spot",
+          "display_name": "Tomato Bacterial Spot",
+          "support": 7,
+          "true_positives": 2,
+          "false_positives": 7,
+          "false_negatives": 5,
+          "precision_percent": 22.22,
+          "recall_percent": 28.57,
+          "f1_score_percent": 25.0,
+          "note": null
+        },
+        {
+          "class_index": 1,
+          "class_name": "Tomato___Early_blight",
+          "display_name": "Tomato Early Blight",
+          "support": 9,
+          "true_positives": 4,
+          "false_positives": 5,
+          "false_negatives": 5,
+          "precision_percent": 44.44,
+          "recall_percent": 44.44,
+          "f1_score_percent": 44.44,
+          "note": null
+        },
+        {
+          "class_index": 2,
+          "class_name": "Tomato___Late_blight",
+          "display_name": "Tomato Late Blight",
+          "support": 9,
+          "true_positives": 6,
+          "false_positives": 2,
+          "false_negatives": 3,
+          "precision_percent": 75.0,
+          "recall_percent": 66.67,
+          "f1_score_percent": 70.59,
+          "note": null
+        },
+        {
+          "class_index": 3,
+          "class_name": "Tomato___Leaf_Mold",
+          "display_name": "Tomato Leaf Mold",
+          "support": 4,
+          "true_positives": 2,
+          "false_positives": 8,
+          "false_negatives": 2,
+          "precision_percent": 20.0,
+          "recall_percent": 50.0,
+          "f1_score_percent": 28.57,
+          "note": null
+        },
+        {
+          "class_index": 4,
+          "class_name": "Tomato___Septoria_leaf_spot",
+          "display_name": "Tomato Septoria Leaf Spot",
+          "support": 11,
+          "true_positives": 8,
+          "false_positives": 6,
+          "false_negatives": 3,
+          "precision_percent": 57.14,
+          "recall_percent": 72.73,
+          "f1_score_percent": 64.0,
+          "note": null
+        },
+        {
+          "class_index": 5,
+          "class_name": "Tomato___Spider_mites Two-spotted_spider_mite",
+          "display_name": "Two-Spotted Spider Mite",
+          "support": 0,
+          "true_positives": 0,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision_percent": null,
+          "recall_percent": null,
+          "f1_score_percent": null,
+          "note": "Zero support in dataset split"
+        },
+        {
+          "class_index": 6,
+          "class_name": "Tomato___Target_Spot",
+          "display_name": "Tomato Target Spot",
+          "support": 0,
+          "true_positives": 0,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision_percent": null,
+          "recall_percent": null,
+          "f1_score_percent": null,
+          "note": "Zero support in dataset split"
+        },
+        {
+          "class_index": 7,
+          "class_name": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+          "display_name": "Tomato Yellow Leaf Curl",
+          "support": 6,
+          "true_positives": 4,
+          "false_positives": 3,
+          "false_negatives": 2,
+          "precision_percent": 57.14,
+          "recall_percent": 66.67,
+          "f1_score_percent": 61.54,
+          "note": null
+        },
+        {
+          "class_index": 8,
+          "class_name": "Tomato___Tomato_mosaic_virus",
+          "display_name": "Tomato Mosaic Virus",
+          "support": 9,
+          "true_positives": 3,
+          "false_positives": 3,
+          "false_negatives": 6,
+          "precision_percent": 50.0,
+          "recall_percent": 33.33,
+          "f1_score_percent": 40.0,
+          "note": null
+        },
+        {
+          "class_index": 9,
+          "class_name": "Tomato___healthy",
+          "display_name": "Healthy Tomato",
+          "support": 8,
+          "true_positives": 0,
+          "false_positives": 0,
+          "false_negatives": 8,
+          "precision_percent": null,
+          "recall_percent": 0.0,
+          "f1_score_percent": 0.0,
+          "note": null
+        }
+      ],
+      "confusion_matrix": [
+        [
+          2,
+          1,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          4,
+          0,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          6,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0,
+          0,
+          8,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          2,
+          3,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          3,
+          0,
+          0,
+          0,
+          1,
+          3,
+          0
+        ]
+      ],
+      "confidence_statistics": {
+        "correct_predictions": {
+          "count": 29,
+          "mean_percent": 76.42,
+          "std_percent": 21.53,
+          "min_percent": 33.9,
+          "max_percent": 100.0
+        },
+        "incorrect_predictions": {
+          "count": 34,
+          "mean_percent": 62.32,
+          "std_percent": 18.14,
+          "min_percent": 31.2,
+          "max_percent": 98.7
+        }
+      },
+      "uncertainty_evaluation": {
+        "rules": {
+          "confidence_threshold_percent": 60.0,
+          "margin_threshold_pp": 10.0
+        },
+        "flagged_count": 25,
+        "flagged_percent": 39.68,
+        "flag_breakdown": {
+          "weak_confidence_count": 25,
+          "ambiguous_margin_count": 7,
+          "both_reasons_count": 7,
+          "weak_confidence_only_count": 18,
+          "ambiguous_margin_only_count": 0
+        },
+        "error_interception_contingency": {
+          "true_positives_error_caught": 17,
+          "false_positives_false_alarm": 8,
+          "false_negatives_silent_error": 17,
+          "true_negatives_clean_correct": 21,
+          "error_interception_rate_percent": 50.0
+        },
+        "clean_subset_performance": {
+          "sample_count": 38,
+          "percentage_of_dataset": 60.32,
+          "correct_count": 21,
+          "accuracy_percent": 55.26
+        }
+      }
+    },
+    "Combined": {
+      "manifest_entries": 163,
+      "usable_images": 163,
+      "evaluated_images": 163,
+      "exclusions": [],
+      "exclusion_count": 0,
+      "top1_accuracy_percent": 79.14,
+      "top1_correct_count": 129,
+      "top2_accuracy_percent": 85.89,
+      "top2_correct_count": 140,
+      "per_class_metrics": [
+        {
+          "class_index": 0,
+          "class_name": "Tomato___Bacterial_spot",
+          "display_name": "Tomato Bacterial Spot",
+          "support": 17,
+          "true_positives": 12,
+          "false_positives": 7,
+          "false_negatives": 5,
+          "precision_percent": 63.16,
+          "recall_percent": 70.59,
+          "f1_score_percent": 66.67,
+          "note": null
+        },
+        {
+          "class_index": 1,
+          "class_name": "Tomato___Early_blight",
+          "display_name": "Tomato Early Blight",
+          "support": 19,
+          "true_positives": 14,
+          "false_positives": 5,
+          "false_negatives": 5,
+          "precision_percent": 73.68,
+          "recall_percent": 73.68,
+          "f1_score_percent": 73.68,
+          "note": null
+        },
+        {
+          "class_index": 2,
+          "class_name": "Tomato___Late_blight",
+          "display_name": "Tomato Late Blight",
+          "support": 19,
+          "true_positives": 16,
+          "false_positives": 2,
+          "false_negatives": 3,
+          "precision_percent": 88.89,
+          "recall_percent": 84.21,
+          "f1_score_percent": 86.49,
+          "note": null
+        },
+        {
+          "class_index": 3,
+          "class_name": "Tomato___Leaf_Mold",
+          "display_name": "Tomato Leaf Mold",
+          "support": 14,
+          "true_positives": 12,
+          "false_positives": 8,
+          "false_negatives": 2,
+          "precision_percent": 60.0,
+          "recall_percent": 85.71,
+          "f1_score_percent": 70.59,
+          "note": null
+        },
+        {
+          "class_index": 4,
+          "class_name": "Tomato___Septoria_leaf_spot",
+          "display_name": "Tomato Septoria Leaf Spot",
+          "support": 21,
+          "true_positives": 18,
+          "false_positives": 6,
+          "false_negatives": 3,
+          "precision_percent": 75.0,
+          "recall_percent": 85.71,
+          "f1_score_percent": 80.0,
+          "note": null
+        },
+        {
+          "class_index": 5,
+          "class_name": "Tomato___Spider_mites Two-spotted_spider_mite",
+          "display_name": "Two-Spotted Spider Mite",
+          "support": 10,
+          "true_positives": 10,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision_percent": 100.0,
+          "recall_percent": 100.0,
+          "f1_score_percent": 100.0,
+          "note": null
+        },
+        {
+          "class_index": 6,
+          "class_name": "Tomato___Target_Spot",
+          "display_name": "Tomato Target Spot",
+          "support": 10,
+          "true_positives": 10,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision_percent": 100.0,
+          "recall_percent": 100.0,
+          "f1_score_percent": 100.0,
+          "note": null
+        },
+        {
+          "class_index": 7,
+          "class_name": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+          "display_name": "Tomato Yellow Leaf Curl",
+          "support": 16,
+          "true_positives": 14,
+          "false_positives": 3,
+          "false_negatives": 2,
+          "precision_percent": 82.35,
+          "recall_percent": 87.5,
+          "f1_score_percent": 84.85,
+          "note": null
+        },
+        {
+          "class_index": 8,
+          "class_name": "Tomato___Tomato_mosaic_virus",
+          "display_name": "Tomato Mosaic Virus",
+          "support": 19,
+          "true_positives": 13,
+          "false_positives": 3,
+          "false_negatives": 6,
+          "precision_percent": 81.25,
+          "recall_percent": 68.42,
+          "f1_score_percent": 74.29,
+          "note": null
+        },
+        {
+          "class_index": 9,
+          "class_name": "Tomato___healthy",
+          "display_name": "Healthy Tomato",
+          "support": 18,
+          "true_positives": 10,
+          "false_positives": 0,
+          "false_negatives": 8,
+          "precision_percent": 100.0,
+          "recall_percent": 55.56,
+          "f1_score_percent": 71.43,
+          "note": null
+        }
+      ],
+      "confusion_matrix": [
+        [
+          12,
+          1,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          14,
+          0,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          16,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0,
+          0,
+          18,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          10,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          10,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          14,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          2,
+          13,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          3,
+          0,
+          0,
+          0,
+          1,
+          3,
+          10
+        ]
+      ],
+      "confidence_statistics": {
+        "correct_predictions": {
+          "count": 129,
+          "mean_percent": 94.41,
+          "std_percent": 14.36,
+          "min_percent": 33.9,
+          "max_percent": 100.0
+        },
+        "incorrect_predictions": {
+          "count": 34,
+          "mean_percent": 62.32,
+          "std_percent": 18.14,
+          "min_percent": 31.2,
+          "max_percent": 98.7
+        }
+      },
+      "uncertainty_evaluation": {
+        "rules": {
+          "confidence_threshold_percent": 60.0,
+          "margin_threshold_pp": 10.0
+        },
+        "flagged_count": 25,
+        "flagged_percent": 15.34,
+        "flag_breakdown": {
+          "weak_confidence_count": 25,
+          "ambiguous_margin_count": 7,
+          "both_reasons_count": 7,
+          "weak_confidence_only_count": 18,
+          "ambiguous_margin_only_count": 0
+        },
+        "error_interception_contingency": {
+          "true_positives_error_caught": 17,
+          "false_positives_false_alarm": 8,
+          "false_negatives_silent_error": 17,
+          "true_negatives_clean_correct": 121,
+          "error_interception_rate_percent": 50.0
+        },
+        "clean_subset_performance": {
+          "sample_count": 138,
+          "percentage_of_dataset": 84.66,
+          "correct_count": 121,
+          "accuracy_percent": 87.68
+        }
+      }
+    }
+  }
+}
